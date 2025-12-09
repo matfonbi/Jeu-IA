@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="32" height="48" tilewidth="32" tileheight="32" infinite="0" nextlayerid="18" nextobjectid="31">
+ <tileset firstgid="1" source="floors.tsx"/>
+ <tileset firstgid="2049" source="walls.tsx"/>
+ <tileset firstgid="8193" name="flute" tilewidth="64" tileheight="64" tilecount="273" columns="13">
+  <image source="flautist.png" trans="ff00ff" width="832" height="1344"/>
+  <tile id="81">
+   <animation>
+    <frame tileid="81" duration="200"/>
+    <frame tileid="82" duration="100"/>
+    <frame tileid="83" duration="200"/>
+    <frame tileid="82" duration="100"/>
+   </animation>
+  </tile>
+ </tileset>
+ <tileset firstgid="8466" name="lute" tilewidth="64" tileheight="64" tilecount="273" columns="13">
+  <image source="lutist.png" trans="ff00ff" width="832" height="1344"/>
+  <tile id="183">
+   <animation>
+    <frame tileid="183" duration="100"/>
+    <frame tileid="184" duration="100"/>
+    <frame tileid="185" duration="100"/>
+    <frame tileid="186" duration="100"/>
+    <frame tileid="185" duration="100"/>
+    <frame tileid="183" duration="100"/>
+    <frame tileid="184" duration="100"/>
+    <frame tileid="185" duration="100"/>
+    <frame tileid="186" duration="100"/>
+    <frame tileid="187" duration="100"/>
+    <frame tileid="186" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="185">
+   <animation>
+    <frame tileid="185" duration="200"/>
+    <frame tileid="184" duration="200"/>
+    <frame tileid="183" duration="200"/>
+    <frame tileid="183" duration="200"/>
+    <frame tileid="184" duration="200"/>
+    <frame tileid="185" duration="200"/>
+    <frame tileid="186" duration="200"/>
+   </animation>
+  </tile>
+ </tileset>
+ <tileset firstgid="8739" name="drumstick" tilewidth="64" tileheight="64" tilecount="273" columns="13">
+  <image source="drummer.png" trans="ff00ff" width="832" height="1344"/>
+  <tile id="186">
+   <animation>
+    <frame tileid="186" duration="200"/>
+    <frame tileid="185" duration="50"/>
+    <frame tileid="183" duration="100"/>
+    <frame tileid="182" duration="150"/>
+   </animation>
+  </tile>
+  <tile id="187">
+   <animation>
+    <frame tileid="187" duration="100"/>
+    <frame tileid="185" duration="100"/>
+    <frame tileid="183" duration="50"/>
+    <frame tileid="184" duration="100"/>
+    <frame tileid="186" duration="100"/>
+   </animation>
+  </tile>
+ </tileset>
+ <tileset firstgid="9012" name="tavern-deco" tilewidth="32" tileheight="32" tilecount="896" columns="16">
+  <image source="../tavern-deco.png" trans="ff00ff" width="512" height="1792"/>
+  <tile id="128">
+   <animation>
+    <frame tileid="128" duration="100"/>
+    <frame tileid="130" duration="100"/>
+    <frame tileid="132" duration="100"/>
+    <frame tileid="130" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="129">
+   <animation>
+    <frame tileid="129" duration="100"/>
+    <frame tileid="131" duration="100"/>
+    <frame tileid="133" duration="100"/>
+    <frame tileid="131" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="146">
+   <animation>
+    <frame tileid="146" duration="100"/>
+    <frame tileid="148" duration="100"/>
+    <frame tileid="150" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="147">
+   <animation>
+    <frame tileid="147" duration="100"/>
+    <frame tileid="149" duration="100"/>
+    <frame tileid="151" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="162">
+   <animation>
+    <frame tileid="162" duration="100"/>
+    <frame tileid="164" duration="100"/>
+    <frame tileid="166" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="163">
+   <animation>
+    <frame tileid="163" duration="100"/>
+    <frame tileid="165" duration="100"/>
+    <frame tileid="167" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="177">
+   <animation>
+    <frame tileid="177" duration="100"/>
+    <frame tileid="178" duration="100"/>
+    <frame tileid="179" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="181">
+   <animation>
+    <frame tileid="181" duration="100"/>
+    <frame tileid="182" duration="100"/>
+    <frame tileid="183" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="185">
+   <animation>
+    <frame tileid="185" duration="100"/>
+    <frame tileid="186" duration="100"/>
+    <frame tileid="187" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="189">
+   <animation>
+    <frame tileid="189" duration="100"/>
+    <frame tileid="190" duration="100"/>
+    <frame tileid="191" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="193">
+   <animation>
+    <frame tileid="193" duration="100"/>
+    <frame tileid="194" duration="100"/>
+    <frame tileid="195" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="197">
+   <animation>
+    <frame tileid="197" duration="100"/>
+    <frame tileid="198" duration="100"/>
+    <frame tileid="199" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="201">
+   <animation>
+    <frame tileid="201" duration="100"/>
+    <frame tileid="202" duration="100"/>
+    <frame tileid="203" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="205">
+   <animation>
+    <frame tileid="205" duration="100"/>
+    <frame tileid="206" duration="100"/>
+    <frame tileid="207" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="209">
+   <animation>
+    <frame tileid="209" duration="100"/>
+    <frame tileid="210" duration="100"/>
+    <frame tileid="211" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="213">
+   <animation>
+    <frame tileid="213" duration="100"/>
+    <frame tileid="214" duration="100"/>
+    <frame tileid="215" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="217">
+   <animation>
+    <frame tileid="217" duration="100"/>
+    <frame tileid="218" duration="100"/>
+    <frame tileid="219" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="221">
+   <animation>
+    <frame tileid="221" duration="100"/>
+    <frame tileid="222" duration="100"/>
+    <frame tileid="223" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="229">
+   <animation>
+    <frame tileid="229" duration="100"/>
+    <frame tileid="230" duration="100"/>
+    <frame tileid="231" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="237">
+   <animation>
+    <frame tileid="237" duration="100"/>
+    <frame tileid="238" duration="100"/>
+    <frame tileid="239" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="646">
+   <animation>
+    <frame tileid="646" duration="100"/>
+    <frame tileid="648" duration="100"/>
+    <frame tileid="650" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="647">
+   <animation>
+    <frame tileid="647" duration="100"/>
+    <frame tileid="649" duration="100"/>
+    <frame tileid="651" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="662">
+   <animation>
+    <frame tileid="662" duration="100"/>
+    <frame tileid="664" duration="100"/>
+    <frame tileid="666" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="663">
+   <animation>
+    <frame tileid="663" duration="100"/>
+    <frame tileid="665" duration="100"/>
+    <frame tileid="667" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="726">
+   <animation>
+    <frame tileid="726" duration="100"/>
+    <frame tileid="728" duration="100"/>
+    <frame tileid="730" duration="100"/>
+    <frame tileid="728" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="727">
+   <animation>
+    <frame tileid="727" duration="100"/>
+    <frame tileid="729" duration="100"/>
+    <frame tileid="731" duration="100"/>
+    <frame tileid="729" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="728">
+   <animation>
+    <frame tileid="728" duration="100"/>
+    <frame tileid="730" duration="100"/>
+    <frame tileid="728" duration="100"/>
+    <frame tileid="726" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="729">
+   <animation>
+    <frame tileid="729" duration="100"/>
+    <frame tileid="731" duration="100"/>
+    <frame tileid="729" duration="100"/>
+    <frame tileid="727" duration="100"/>
+   </animation>
+  </tile>
+ </tileset>
+ <tileset firstgid="9908" name="tavern-furniture" tilewidth="32" tileheight="32" tilecount="1024" columns="32">
+  <image source="../tavern-furniture.png" trans="ff00ff" width="1024" height="1024"/>
+ </tileset>
+ <tileset firstgid="10932" name="tavern-cooking" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+  <image source="../tavern-cooking.png" trans="ff00ff" width="512" height="512"/>
+  <tile id="82">
+   <animation>
+    <frame tileid="82" duration="100"/>
+    <frame tileid="83" duration="100"/>
+    <frame tileid="84" duration="100"/>
+    <frame tileid="85" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="112">
+   <animation>
+    <frame tileid="112" duration="100"/>
+    <frame tileid="113" duration="100"/>
+    <frame tileid="114" duration="100"/>
+    <frame tileid="115" duration="100"/>
+    <frame tileid="116" duration="100"/>
+    <frame tileid="117" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="128">
+   <animation>
+    <frame tileid="128" duration="100"/>
+    <frame tileid="129" duration="100"/>
+    <frame tileid="130" duration="100"/>
+    <frame tileid="131" duration="100"/>
+    <frame tileid="132" duration="100"/>
+    <frame tileid="133" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="216">
+   <animation>
+    <frame tileid="216" duration="100"/>
+    <frame tileid="218" duration="100"/>
+    <frame tileid="220" duration="100"/>
+    <frame tileid="222" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="217">
+   <animation>
+    <frame tileid="217" duration="100"/>
+    <frame tileid="219" duration="100"/>
+    <frame tileid="221" duration="100"/>
+    <frame tileid="223" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="240">
+   <animation>
+    <frame tileid="240" duration="100"/>
+    <frame tileid="242" duration="100"/>
+    <frame tileid="244" duration="100"/>
+    <frame tileid="246" duration="100"/>
+   </animation>
+  </tile>
+  <tile id="241">
+   <animation>
+    <frame tileid="241" duration="100"/>
+    <frame tileid="243" duration="100"/>
+    <frame tileid="245" duration="100"/>
+    <frame tileid="247" duration="100"/>
+   </animation>
+  </tile>
+ </tileset>
+ <tileset firstgid="11188" name="container" tilewidth="32" tileheight="32" tilecount="1024" columns="16">
+  <image source="container2.png" trans="ff00ff" width="512" height="2048"/>
+ </tileset>
+ <layer id="3" name="Floor" width="32" height="48">
+  <data encoding="base64" compression="zlib">
+   eJzt0CESgCAQRuFtRk7GYlFPpp5MvY4EgmFnTWzQ9838hcBjEAEA/N2URGZnS+rbX+v9m7O9c/+o95/Ors79Mrwvoq9Gd2znkX013hLRt/5AA/v50cttJeD/AQAAAADfdQNyDCB4
+  </data>
+ </layer>
+ <layer id="1" name="Tile Layer 1" width="32" height="48">
+  <data encoding="base64" compression="zlib">
+   eJztzrcNgEAUBNEt53Q50L+EaQDTAKYBTMoWQETAD5gnTbwrAQD+rs5S41rX5e/3e28ObnRTwP7szcWtbgvY3715uNNdAft4ViSpdFWKfgIAAAAAwDs3zYYRkw==
+  </data>
+ </layer>
+ <layer id="2" name="Tile Layer 2" width="32" height="48">
+  <data encoding="base64" compression="zlib">
+   eJztzyEOgDAQRNFRvQiCJlhUi+wRUMD9T9ADdEUJBM/W/JdMsu5nJQAA8JWilG1b9GuG5bkP6562y6FfZ6n0zuT4720d0HzbB/cBAAAAAPhLA709BY4=
+  </data>
+ </layer>
+ <layer id="7" name="Tile Layer 3" width="32" height="48">
+  <data encoding="base64" compression="zlib">
+   eJzt0bEJgEAMBdArHOWEA1tncAJncBdxLodwG4sUWlhKtHgPPkn3CSkFAP5p7nP76nDte4251bz+8dY/tUiG9eHGpUW+1LXIl47E/wMAAMDbTuahBro=
+  </data>
+ </layer>
+ <layer id="6" name="Tile Layer 4" width="32" height="48">
+  <data encoding="base64" compression="zlib">
+   eJzt0AENAEAIAzGQgIf3r/FVEAhpFdwWAQC71Zsu6JXL913/HwAAAK76VicAkA==
+  </data>
+ </layer>
+ <layer id="4" name="Ceiling" width="32" height="48">
+  <data encoding="base64" compression="zlib">
+   eJzt09EJgCAYReFLb7pHBQ1Wm9UEtVG1RoIvUSlCSUHngx/EB48ISgCANw1Gaq00NtLU+PXV9CZPv3ZnVwlT2vAZhT3PF/opd8nVT30L+v/ud+5fL7tZje/Nh/028v/v9EP3ifVy9gEAAAAAz9oA1fQiJA==
+  </data>
+ </layer>
+ <objectgroup id="15" name="Collision">
+  <object id="16" x="94.6667" y="509.333" width="31.3333" height="97.3333"/>
+  <object id="17" x="93.3333" y="352" width="125.333" height="132.667"/>
+  <object id="18" x="216.667" y="353.333" width="41.3333" height="108"/>
+  <object id="19" x="256.667" y="457.333" width="93.3333" height="14"/>
+  <object id="20" x="349.333" y="376" width="35.3333" height="84.6667"/>
+  <object id="21" x="384.667" y="462" width="30.6667" height="179.333"/>
+  <object id="22" x="294" y="579.333" width="91.3333" height="58"/>
+  <object id="23" x="262" y="612.667" width="31.3333" height="25.3333"/>
+  <object id="24" x="184" y="620" width="32.6667" height="20.6667"/>
+  <object id="25" x="93.3333" y="616.667" width="121.333" height="18.6667"/>
+  <object id="26" x="91.3333" y="592.667" width="31.3333" height="22.6667"/>
+  <object id="27" x="202" y="642.667" width="74.6667" height="23.3333"/>
+  <object id="28" x="69.3333" y="468" width="24.6667" height="55.3333"/>
+ </objectgroup>
+ <objectgroup id="16" name="Spawn">
+  <object id="29" name="middle_entrance" x="238.667" y="625.333"/>
+ </objectgroup>
+ <objectgroup id="17" name="Transitions">
+  <object id="30" name="exit_middle_tavern" x="238.667" y="612.667">
+   <properties>
+    <property name="target_map" value="village.tmx"/>
+    <property name="target_spawn" value="entrance_middle_tavern"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextlayerid="16" nextobjectid="413">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="416">
  <tileset firstgid="1" source="terrain-map-v8.tsx"/>
  <tileset firstgid="15745" name="vten" tilewidth="32" tileheight="32" tilecount="3072" columns="32">
   <image source="victorian-tenement.png" width="1024" height="3072"/>
@@ -918,7 +918,7 @@
   <object id="133" x="818.667" y="705.333" width="92" height="25.3333"/>
   <object id="134" x="910.667" y="730.667" width="108" height="33.3333"/>
   <object id="135" x="1029.33" y="777.333" width="271" height="379.667"/>
-  <object id="136" x="1362" y="717.333" width="267" height="462.667"/>
+  <object id="136" x="1362" y="717.333" width="267" height="430.667"/>
   <object id="139" x="1704" y="1064" width="245.333" height="108"/>
   <object id="141" x="2017.33" y="724" width="282.667" height="457.333"/>
   <object id="144" x="2146.67" y="672" width="29.3333" height="49.3333"/>
@@ -1135,9 +1135,9 @@
   <object id="368" x="1711" y="811" width="33" height="65"/>
   <object id="369" x="2688" y="830" width="95" height="71"/>
   <object id="374" x="963" y="497" width="26" height="41"/>
-  <object id="375" x="2804" y="582" width="32" height="49"/>
-  <object id="376" x="672" y="2519" width="31" height="37"/>
-  <object id="377" x="1322" y="2497" width="34" height="45"/>
+  <object id="375" x="2805" y="617" width="32" height="49"/>
+  <object id="376" x="672" y="2541" width="31" height="37"/>
+  <object id="377" x="1322" y="2520" width="34" height="45"/>
   <object id="378" x="1161" y="2616"/>
   <object id="381" x="11" y="581" width="200" height="7"/>
   <object id="382" x="266" y="580" width="235" height="7"/>
@@ -1170,6 +1170,26 @@
   <object id="410" x="2" y="0" width="4095" height="21"/>
   <object id="411" x="4081" y="-1" width="13" height="4098"/>
   <object id="412" x="1" y="4076" width="4093" height="18"/>
+ </objectgroup>
+ <objectgroup id="16" name="Transitions">
+  <object id="413" name="entrance_big_tavern" x="744" y="2511">
+   <properties>
+    <property name="target_map" value="big_tavern.tmx"/>
+    <property name="target_spawn" value="big_entrance"/>
+   </properties>
+  </object>
+  <object id="414" name="entrance_small_tavern" x="783" y="3713">
+   <properties>
+    <property name="target_map" value="small_tavern.tmx"/>
+    <property name="target_spawn" value="small_entrance"/>
+   </properties>
+  </object>
+  <object id="415" name="entrance_middle_tavern" x="3920" y="3669">
+   <properties>
+    <property name="target_map" value="middle_tavern"/>
+    <property name="target_spawn" value="middle_spawn"/>
+   </properties>
+  </object>
  </objectgroup>
  <layer id="1" name="Trn_1" width="128" height="128">
   <data encoding="base64" compression="zlib">
