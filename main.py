@@ -251,6 +251,21 @@ class Game(arcade.Window):
             if detected:
                 zone = detected[0]
                 self.npc_to_talk = zone.npc_ref
+        
+        # -------------------------------------------------
+        # Bulle PNJ lorsqu’on est dans une zone d’interaction
+        # -------------------------------------------------
+        if self.npc_to_talk and not self.in_dialogue:
+            cam_x, cam_y = self.camera.position
+            win_w, win_h = self.get_size()
+
+            # Position de la bulle au-dessus du joueur
+            screen_x = self.player.center_x - cam_x + win_w / 2
+            screen_y = self.player.center_y - cam_y + win_h / 2 + 50
+
+            self.bubble_sprite.center_x = screen_x
+            self.bubble_sprite.center_y = screen_y
+
 
 
 
