@@ -388,7 +388,7 @@
   <object id="30" name="exit_middle_tavern" x="238.667" y="612.667">
    <properties>
     <property name="target_map" value="village.tmx"/>
-    <property name="target_spawn" value="entrance_middle_tavern"/>
+    <property name="target_spawn" value="spawn_exit_middle_tavern"/>
    </properties>
   </object>
  </objectgroup>

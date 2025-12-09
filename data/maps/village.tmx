@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="416">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="423">
  <tileset firstgid="1" source="terrain-map-v8.tsx"/>
  <tileset firstgid="15745" name="vten" tilewidth="32" tileheight="32" tilecount="3072" columns="32">
   <image source="victorian-tenement.png" width="1024" height="3072"/>
@@ -1190,6 +1190,18 @@
     <property name="target_spawn" value="middle_spawn"/>
    </properties>
   </object>
+  <object id="419" name="entrance_donjon" x="256.667" y="763.333">
+   <properties>
+    <property name="target_map" value="Dungeon1.tmx"/>
+    <property name="target_spawn" value="donjon_spawn"/>
+   </properties>
+  </object>
+  <object id="422" name="entrance_fields" x="3833.5" y="116">
+   <properties>
+    <property name="target_map" value="Beginning Fields.tmx"/>
+    <property name="target_spawn" value="spawn_fields"/>
+   </properties>
+  </object>
  </objectgroup>
  <layer id="1" name="Trn_1" width="128" height="128">
   <data encoding="base64" compression="zlib">
@@ -1234,5 +1246,10 @@
  </objectgroup>
  <objectgroup id="15" name="Spawn">
   <object id="379" name="spawn_player" x="215" y="339"/>
+  <object id="416" name="spawn_exit_middle_tavern" x="3915.92" y="3681.83"/>
+  <object id="417" name="spawn_exit_small_tavern" x="780.667" y="3687.5"/>
+  <object id="418" name="spawn_exit_big_tavern" x="760.333" y="2534.33"/>
+  <object id="420" name="spawn_exit_donjon" x="258" y="775.333"/>
+  <object id="421" name="spawn_exit_fields" x="3833.5" y="123"/>
  </objectgroup>
 </map>

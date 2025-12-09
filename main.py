@@ -25,10 +25,42 @@ class Game(arcade.Window):
 
         arcade.set_background_color(arcade.color.BLACK)
 
+        self.default_zoom = 1.0
+        self.default_player_scale = 1.1
+
+    # --- NOUVELLE MÉTHODE ---
+    def apply_map_settings(self, map_name: str):
+        """Ajuste zoom caméra et taille du joueur selon la map."""
+        name = map_name.lower()
+
+        if name.startswith("dungeon1"):
+            self.camera.zoom = 1.7
+            self.player.scale = 0.6       
+        elif name.startswith("big_tavern"):
+            self.camera.zoom = 1.7       
+            self.player.scale = 1.1 
+        elif name.startswith("small_tavern"):
+            self.camera.zoom = 1.7       
+            self.player.scale = 1.1 
+        elif name.startswith("middle_tavern"):
+            self.camera.zoom = 1.7       
+            self.player.scale = 1.1 
+        elif name.startswith("beginning"):
+            self.camera.zoom = 1.7       
+            self.player.scale = 0.7
+        elif name.startswith("interior1"):
+            self.camera.zoom = 2.0       
+            self.player.scale = 0.6 
+        else:
+            # Toutes les autres maps
+            self.camera.zoom = self.default_zoom
+            self.player.scale = self.default_player_scale
+
     # ----------------------------------------------------------------- setup
     def setup(self):
         # On démarre sur la map "village", à l'objet "spawn_player"
         self.map_manager.load_map("village", "spawn_player", self.player)
+        self.apply_map_settings("village")
 
     # ------------------------------------------------------------------ draw
     def on_draw(self):
@@ -86,27 +118,39 @@ class Game(arcade.Window):
         if not self.map_manager.tile_map:
             return
 
-        world_w = (
-            self.map_manager.tile_map.width * self.map_manager.tile_map.tile_width
-        )
-        world_h = (
-            self.map_manager.tile_map.height * self.map_manager.tile_map.tile_height
-        )
-
+        # Taille réelle visible à l'écran (corrigée par le zoom)
+        zoom = self.camera.zoom
         screen_w, screen_h = self.get_size()
+        visible_w = screen_w / zoom
+        visible_h = screen_h / zoom
 
+        # Taille totale de la map en pixels
+        world_w = self.map_manager.tile_map.width * self.map_manager.tile_map.tile_width
+        world_h = self.map_manager.tile_map.height * self.map_manager.tile_map.tile_height
+
+        # Position idéale (center on player)
         target_x = self.player.center_x
         target_y = self.player.center_y
 
-        min_x = screen_w / 2
-        max_x = world_w - screen_w / 2
-        min_y = screen_h / 2
-        max_y = world_h - screen_h / 2
+        # Limites de caméra (corrigées)
+        min_x = visible_w / 2
+        max_x = world_w - visible_w / 2
+        min_y = visible_h / 2
+        max_y = world_h - visible_h / 2
 
-        cam_x = min(max(target_x, min_x), max_x)
-        cam_y = min(max(target_y, min_y), max_y)
+        # Si la map est plus petite que l’écran → centrer automatiquement
+        if world_w < visible_w:
+            cam_x = world_w / 2
+        else:
+            cam_x = min(max(target_x, min_x), max_x)
+
+        if world_h < visible_h:
+            cam_y = world_h / 2
+        else:
+            cam_y = min(max(target_y, min_y), max_y)
 
         self.camera.position = (cam_x, cam_y)
+
 
     # ------------------------------------------------------ map transitions
     def check_for_map_transition(self):
@@ -133,6 +177,7 @@ class Game(arcade.Window):
 
         # On charge la nouvelle map en gardant le même Player
         self.map_manager.load_map(target_map, target_spawn, self.player)
+        self.apply_map_settings(target_map)
 
     # -------------------------------------------------------------- input
     def on_key_press(self, key, modifiers):

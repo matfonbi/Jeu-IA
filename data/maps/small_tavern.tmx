@@ -384,7 +384,7 @@
   <object id="26" name="small_exit" x="728" y="651">
    <properties>
     <property name="target_map" value="village.tmx"/>
-    <property name="target_spawn" value="entrance_small_tavern"/>
+    <property name="target_spawn" value="spawn_exit_small_tavern"/>
    </properties>
   </object>
  </objectgroup>
