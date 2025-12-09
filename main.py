@@ -78,6 +78,27 @@ class Game(arcade.Window):
 
         self.gui_camera.use()
 
+        # --- Affichage "Appuyez sur E" ---
+        hits = arcade.check_for_collision_with_list(
+            self.player, self.map_manager.transitions
+        )
+        if hits:
+            # Convertit coordonnées monde → écran
+            cam_x, cam_y = self.camera.position
+            screen_x = self.player.center_x - cam_x + self.get_size()[0] / 2
+            screen_y = self.player.center_y - cam_y + self.get_size()[1] / 2
+
+            arcade.draw_text(
+                "Appuyez sur E",
+                screen_x,
+                screen_y + 40,
+                arcade.color.WHITE,
+                20,
+                anchor_x="center"
+            )
+
+
+
     # ---------------------------------------------------------------- update
     def on_update(self, delta_time: float):
         # Sauvegarde de la position avant déplacement
