@@ -28,6 +28,30 @@ class Game(arcade.Window):
         self.default_zoom = 1.0
         self.default_player_scale = 1.1
 
+        # Texture de la bulle
+        self.bubble_texture = arcade.make_soft_square_texture(
+            64,
+            color=(0, 0, 0, 180),
+            outer_alpha=180
+        )
+
+        # SpriteList pour la bulle (obligatoire en Arcade 3.x)
+        self.bubble_list = arcade.SpriteList()
+
+        # Sprite bulle
+        self.bubble_sprite = arcade.Sprite()
+        self.bubble_sprite.texture = self.bubble_texture
+        self.bubble_sprite.width = 160
+        self.bubble_sprite.height = 40
+
+        # Ajouter le sprite dans la liste
+        self.bubble_list.append(self.bubble_sprite)
+
+        self.show_bubble = False
+
+
+
+
     # --- NOUVELLE MÉTHODE ---
     def apply_map_settings(self, map_name: str):
         """Ajuste zoom caméra et taille du joueur selon la map."""
@@ -78,24 +102,19 @@ class Game(arcade.Window):
 
         self.gui_camera.use()
 
-        # --- Affichage "Appuyez sur E" ---
-        hits = arcade.check_for_collision_with_list(
-            self.player, self.map_manager.transitions
-        )
-        if hits:
-            # Convertit coordonnées monde → écran
-            cam_x, cam_y = self.camera.position
-            screen_x = self.player.center_x - cam_x + self.get_size()[0] / 2
-            screen_y = self.player.center_y - cam_y + self.get_size()[1] / 2
+        if self.show_bubble:
+            self.bubble_list.draw()
 
             arcade.draw_text(
                 "Appuyez sur E",
-                screen_x,
-                screen_y + 40,
+                self.bubble_sprite.center_x,
+                self.bubble_sprite.center_y - 7,
                 arcade.color.WHITE,
-                20,
+                18,
                 anchor_x="center"
             )
+
+
 
 
 
@@ -133,6 +152,25 @@ class Game(arcade.Window):
         # Interaction : si on maintient E, on teste les transitions
         if arcade.key.E in self.pressed_keys:
             self.check_for_map_transition()
+        
+        hits = arcade.check_for_collision_with_list(
+            self.player, self.map_manager.transitions
+        )
+
+        if hits:
+            cam_x, cam_y = self.camera.position
+            win_w, win_h = self.get_size()
+
+            screen_x = self.player.center_x - cam_x + win_w / 2
+            screen_y = self.player.center_y - cam_y + win_h / 2 + 50
+
+            self.bubble_sprite.center_x = screen_x
+            self.bubble_sprite.center_y = screen_y
+            self.show_bubble = True
+        else:
+            self.show_bubble = False
+
+
 
     # ----------------------------------------------------------- camera logic
     def update_camera(self):
