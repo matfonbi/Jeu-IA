@@ -1,5 +1,6 @@
 import arcade
 import pyglet.gl as gl
+from arcade import AnimatedWalkingSprite
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -65,31 +66,34 @@ class Game(arcade.Window):
                     self.walls.append(wall)
 
 
-        # Textures du joueur
-        self.texture_front = arcade.load_texture("assets/sprites/player/player_front.png")
-        self.texture_back = arcade.load_texture("assets/sprites/player/player_back.png")
-        self.texture_left = arcade.load_texture("assets/sprites/player/player_left.png")
-        self.texture_right = arcade.load_texture("assets/sprites/player/player_right.png")
+        # --- Création du joueur animé ---
+        self.player_sprite = arcade.AnimatedWalkingSprite(scale=1.0)
 
-        # Joueur
-        self.player_sprite = arcade.Sprite(self.texture_front, scale=0.10)
+        # FRONT
+        self.player_sprite.stand_down_textures = [arcade.load_texture("assets/sprites/player/player_front_0.png")]
+        self.player_sprite.walk_down_textures = [
+            arcade.load_texture(f"assets/sprites/player/player_front_{i}.png") for i in range(4)
+        ]
 
-        self.player_sprite.previous_x = self.player_sprite.center_x
-        self.player_sprite.previous_y = self.player_sprite.center_y
+        # BACK
+        self.player_sprite.stand_up_textures = [arcade.load_texture("assets/sprites/player/player_back_0.png")]
+        self.player_sprite.walk_up_textures = [
+            arcade.load_texture(f"assets/sprites/player/player_back_{i}.png") for i in range(4)
+        ]
+
+        # LEFT
+        self.player_sprite.stand_left_textures = [arcade.load_texture("assets/sprites/player/player_left_0.png")]
+        self.player_sprite.walk_left_textures = [
+            arcade.load_texture(f"assets/sprites/player/player_left_{i}.png") for i in range(4)
+        ]
+
+        # RIGHT
+        self.player_sprite.stand_right_textures = [arcade.load_texture("assets/sprites/player/player_right_0.png")]
+        self.player_sprite.walk_right_textures = [
+            arcade.load_texture(f"assets/sprites/player/player_right_{i}.png") for i in range(4)
+        ]
 
 
-        world_width = self.tile_map.width * self.tile_map.tile_width
-        world_height = self.tile_map.height * self.tile_map.tile_height
-
-        self.player_sprite.center_x = world_width // 2
-        self.player_sprite.center_y = world_height // 2
-
-        if "Player" not in self.scene._sprite_lists:
-            self.scene.add_sprite_list("Player")
-
-        self.scene.add_sprite("Player", self.player_sprite)
-
-        self.npc_list = arcade.SpriteList()
 
         # --- Lire point de spawn --- #
         spawn_layer = self.tile_map.object_lists.get("Spawn", [])
@@ -106,6 +110,12 @@ class Game(arcade.Window):
 
                 self.player_sprite.center_x = x
                 self.player_sprite.center_y = y
+        
+        if "Player" not in self.scene._sprite_lists:
+            self.scene.add_sprite_list("Player")
+
+        self.scene.add_sprite("Player", self.player_sprite)
+
 
         # --- CHARGER LES PNJ DE TILED ---
         self.npc_list = arcade.SpriteList()
@@ -173,22 +183,14 @@ class Game(arcade.Window):
 
         # Appliquer le mouvement
         self.player_sprite.update()
+        self.player_sprite.update_animation(dt)
+
 
         # --- COLLISIONS MURS ---
         if arcade.check_for_collision_with_list(self.player_sprite, self.walls):
             self.player_sprite.center_x = self.player_sprite.previous_x
             self.player_sprite.center_y = self.player_sprite.previous_y
 
-
-        # Texture direction
-        if self.player_sprite.change_x > 0:
-            self.player_sprite.texture = self.texture_right
-        elif self.player_sprite.change_x < 0:
-            self.player_sprite.texture = self.texture_left
-        elif self.player_sprite.change_y > 0:
-            self.player_sprite.texture = self.texture_back
-        elif self.player_sprite.change_y < 0:
-            self.player_sprite.texture = self.texture_front
 
         self.update_camera()
 
@@ -223,7 +225,12 @@ class Game(arcade.Window):
 
 
     def on_key_press(self, key, modifiers):
+        # Quitter le jeu avec Échap
+        if key == arcade.key.ESCAPE:
+            arcade.exit()
+
         self.pressed_keys.add(key)
+
 
     def on_key_release(self, key, modifiers):
         if key in self.pressed_keys:
