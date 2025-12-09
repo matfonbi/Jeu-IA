@@ -23,14 +23,13 @@ class Game(arcade.Window):
         # Entrées clavier
         self.pressed_keys: set[int] = set()
 
-        # Fond
         arcade.set_background_color(arcade.color.BLACK)
 
         # Valeurs par défaut
         self.default_zoom = 1.0
         self.default_player_scale = 1.1
 
-        # ---------- Bulle "Appuyez sur E" ----------
+        # -------------------- BULLE D’INTERACTION --------------------
         self.bubble_texture = arcade.make_soft_square_texture(
             64,
             color=(0, 0, 0, 180),
@@ -43,32 +42,35 @@ class Game(arcade.Window):
         self.bubble_sprite.width = 160
         self.bubble_sprite.height = 40
         self.bubble_list.append(self.bubble_sprite)
-
         self.show_bubble = False
 
-        # ---------- Transition fade in/out ----------
-        self.transition_alpha = 0.0        # opacité actuelle (0-255)
-        self.transition_target = 0.0       # cible (0 ou 255)
-        self.transition_speed = 10.0       # vitesse du fade par frame
-        self.transition_callback = None    # appelé quand fade-out est terminé
+        # -------------------- TRANSITION FADE --------------------
+        self.transition_alpha = 0.0
+        self.transition_target = 0.0
+        self.transition_speed = 10.0
+        self.transition_callback = None
 
-    # -------------------- Transition --------------------
+        # -------------------- DIALOGUES PNJ --------------------
+        self.in_dialogue = False
+        self.dialog_history = []
+        self.dialog_input = ""
+        self.current_npc = None
+        self.npc_to_talk = None   # PNJ détecté dans zone
+
+
+    # -------------------- TRANSITION --------------------
 
     def start_transition(self, callback):
-        """
-        Lance un fade-out (vers noir). Quand alpha atteint 255, `callback` est appelé.
-        Ensuite, le fade-in (retour à 0) se fait automatiquement.
-        """
-        # Si une transition est déjà en cours, on ne relance pas
+        """Lance un fade-out avant la transition."""
         if self.transition_target != 0 or self.transition_alpha != 0:
             return
         self.transition_target = 255.0
         self.transition_callback = callback
 
-    # -------------------- Réglages par map --------------------
+
+    # -------------------- REGLAGES PAR MAP --------------------
 
     def apply_map_settings(self, map_name: str):
-        """Ajuste zoom caméra et taille du joueur selon la map."""
         name = map_name.lower()
 
         if name.startswith("dungeon1"):
@@ -93,14 +95,15 @@ class Game(arcade.Window):
             self.camera.zoom = self.default_zoom
             self.player.scale = self.default_player_scale
 
-    # ------------------------ Setup ------------------------
+
+    # -------------------- SETUP --------------------
 
     def setup(self):
-        # On démarre sur la map "village", à l'objet "spawn_player"
         self.map_manager.load_map("village", "spawn_player", self.player)
         self.apply_map_settings("village")
 
-    # ------------------------- Draw ------------------------
+
+    # -------------------- DRAW --------------------
 
     def on_draw(self):
         self.clear()
@@ -115,13 +118,13 @@ class Game(arcade.Window):
             self.map_manager.walls.draw()
             self.map_manager.transitions.draw()
 
-        # Interface (bulle, HUD, fade, etc.)
+        # Interface
         self.gui_camera.use()
 
-        # --------- Overlay noir de transition ---------
+        # ----------- Overlay noir (transition) -----------
         if self.transition_alpha > 0:
             win_w, win_h = self.get_size()
-            # Rectangle plein couvrant tout l'écran
+
             arcade.draw_lbwh_rectangle_filled(
                 0,
                 0,
@@ -130,9 +133,10 @@ class Game(arcade.Window):
                 (0, 0, 0, int(self.transition_alpha)),
             )
 
-        # --------- Bulle "Appuyez sur E" ---------
-        if self.show_bubble:
+        # ----------- Bulle "Appuyez sur E" (Transitions) -----------
+        if self.show_bubble and not self.in_dialogue:
             self.bubble_list.draw()
+
             arcade.draw_text(
                 "Appuyez sur E",
                 self.bubble_sprite.center_x,
@@ -142,17 +146,74 @@ class Game(arcade.Window):
                 anchor_x="center",
             )
 
-    # ------------------------ Update ------------------------
+        # ----------- Bulle "Parler (E)" (PNJ) -----------
+        if self.npc_to_talk and not self.in_dialogue:
+            arcade.draw_text(
+                "Parler (E)",
+                self.bubble_sprite.center_x,
+                self.bubble_sprite.center_y - 40,
+                arcade.color.WHITE,
+                18,
+                anchor_x="center"
+            )
+
+        # ----------- FENÊTRE DE DIALOGUE -----------
+        if self.in_dialogue:
+            win_w, win_h = self.get_size()
+
+            # Boîte noire
+            arcade.draw_lbwh_rectangle_filled(
+                50,
+                50,
+                win_w - 100,
+                200,
+                (0, 0, 0, 200),
+            )
+
+            # Historique
+            y = 220
+            for speaker, message in self.dialog_history[-4:]:
+                arcade.draw_text(
+                    f"{speaker}: {message}",
+                    70,
+                    y,
+                    arcade.color.WHITE,
+                    16,
+                )
+                y -= 28
+
+            # Zone d’écriture
+            arcade.draw_lbwh_rectangle_outline(
+                60,
+                60,
+                win_w - 120,
+                40,
+                arcade.color.WHITE,
+                2,
+            )
+
+            arcade.draw_text(
+                self.dialog_input,
+                70,
+                70,
+                arcade.color.WHITE,
+                18
+            )
+
+
+    # -------------------- UPDATE --------------------
 
     def on_update(self, delta_time: float):
-        # Sauvegarde de la position avant déplacement (pour corriger collisions)
+        if self.in_dialogue:
+            return  # on freeze le joueur
+
         self.player.remember_position()
 
-        # Reset du mouvement
+        # Reset
         self.player.change_x = 0
         self.player.change_y = 0
 
-        # ZQSD ou flèches
+        # Contrôles
         if arcade.key.UP in self.pressed_keys or arcade.key.Z in self.pressed_keys:
             self.player.change_y = PLAYER_SPEED
         if arcade.key.DOWN in self.pressed_keys or arcade.key.S in self.pressed_keys:
@@ -166,24 +227,41 @@ class Game(arcade.Window):
         self.player.update()
         self.player.update_animation(delta_time)
 
-        # Collisions avec les murs
+        # Collisions
         if arcade.check_for_collision_with_list(self.player, self.map_manager.walls):
             self.player.center_x = self.player.previous_x
             self.player.center_y = self.player.previous_y
 
-        # Caméra qui suit le joueur
+        # Caméra
         self.update_camera()
 
-        # Interaction : si on maintient E, on teste les transitions
+        # Trigger map
         if arcade.key.E in self.pressed_keys:
             self.check_for_map_transition()
 
-        # Gestion de la bulle "Appuyez sur E"
+        # -------------------------------------------------
+        # Détection PNJ + Bulle PNJ
+        # -------------------------------------------------
+        self.npc_to_talk = None
+
+        npc_zones = self.map_manager.npc_interactions  # PAS dans la scene
+
+        if npc_zones:
+            detected = arcade.check_for_collision_with_list(self.player, npc_zones)
+            if detected:
+                zone = detected[0]
+                self.npc_to_talk = zone.npc_ref
+
+
+
+        # -------------------------------------------------
+        # Bulle transition
+        # -------------------------------------------------
         hits = arcade.check_for_collision_with_list(
             self.player, self.map_manager.transitions
         )
 
-        if hits:
+        if hits and not self.in_dialogue:
             cam_x, cam_y = self.camera.position
             win_w, win_h = self.get_size()
 
@@ -196,54 +274,48 @@ class Game(arcade.Window):
         else:
             self.show_bubble = False
 
-        # --- Animation de transition (fade in/out) ---
+        # -------------------------------------------------
+        # Animation du fade-in / fade-out
+        # -------------------------------------------------
         if self.transition_alpha != self.transition_target:
             if self.transition_alpha < self.transition_target:
                 self.transition_alpha += self.transition_speed
+
                 if self.transition_alpha >= self.transition_target:
                     self.transition_alpha = self.transition_target
-                    # Quand on est arrivé à 255 (écran noir) on change la map
                     if self.transition_alpha >= 255 and self.transition_callback:
                         self.transition_callback()
                         self.transition_callback = None
-                        # Maintenant on lance le fade-in
-                        self.transition_target = 0.0
+                        self.transition_target = 0  # fade-in
+
             else:
                 self.transition_alpha -= self.transition_speed
                 if self.transition_alpha <= self.transition_target:
                     self.transition_alpha = self.transition_target
 
-    # --------------------- Caméra ---------------------
+
+    # -------------------- CAMERA --------------------
 
     def update_camera(self):
         if not self.map_manager.tile_map:
             return
 
-        # Taille visible à l'écran (corrigée par le zoom)
         zoom = self.camera.zoom
         screen_w, screen_h = self.get_size()
         visible_w = screen_w / zoom
         visible_h = screen_h / zoom
 
-        # Taille totale de la map en pixels
-        world_w = (
-            self.map_manager.tile_map.width * self.map_manager.tile_map.tile_width
-        )
-        world_h = (
-            self.map_manager.tile_map.height * self.map_manager.tile_map.tile_height
-        )
+        world_w = self.map_manager.tile_map.width * self.map_manager.tile_map.tile_width
+        world_h = self.map_manager.tile_map.height * self.map_manager.tile_map.tile_height
 
-        # Position idéale (center on player)
         target_x = self.player.center_x
         target_y = self.player.center_y
 
-        # Limites caméra
         min_x = visible_w / 2
         max_x = world_w - visible_w / 2
         min_y = visible_h / 2
         max_y = world_h - visible_h / 2
 
-        # Si la map est plus petite que l’écran → on centre
         if world_w < visible_w:
             cam_x = world_w / 2
         else:
@@ -256,31 +328,22 @@ class Game(arcade.Window):
 
         self.camera.position = (cam_x, cam_y)
 
-    # ----------------- Transitions de map -----------------
+
+    # -------------------- TRANSITIONS DE MAP --------------------
 
     def check_for_map_transition(self):
-        """
-        Si le joueur est sur une zone de transition, on change de map.
-
-        Les zones viennent du calque "Transitions" dans Tiled.
-        Chaque sprite de transition porte :
-          - sprite.target_map   (ex: "big_tavern.tmx")
-          - sprite.target_spawn (ex: "big_entrance")
-        """
         hits = arcade.check_for_collision_with_list(
             self.player, self.map_manager.transitions
         )
-        if not hits:
+        if not hits or self.in_dialogue:
             return
 
-        # On ne lance pas une nouvelle transition si une est déjà en cours
         if self.transition_target != 0 or self.transition_alpha != 0:
             return
 
         trigger = hits[0]
         target_map = getattr(trigger, "target_map", None)
         target_spawn = getattr(trigger, "target_spawn", None)
-
         if not target_map or not target_spawn:
             return
 
@@ -290,20 +353,67 @@ class Game(arcade.Window):
 
         self.start_transition(do_change)
 
-    # ----------------------- Input -----------------------
+
+    # -------------------- DIALOGUES --------------------
+
+    def start_npc_dialog(self, npc):
+        self.in_dialogue = True
+        self.current_npc = npc
+
+        self.dialog_history = [
+            ("PNJ", "Bonjour, voyageur. Comment puis-je vous aider ?")
+        ]
+        self.dialog_input = ""
+
+
+    def send_player_dialog(self):
+        """Le joueur valide son message."""
+        msg = self.dialog_input.strip()
+        if not msg:
+            return
+
+        self.dialog_history.append(("Vous", msg))
+
+        # ------ Réponse PNJ (version statique pour l'instant) ------
+        response = "Je suis un PNJ simple… mais bientôt connecté à une IA !"
+        self.dialog_history.append(("PNJ", response))
+
+        self.dialog_input = ""
+
+
+    # -------------------- INPUT --------------------
 
     def on_key_press(self, key, modifiers):
-        # ESC = quitter le jeu
         if key == arcade.key.ESCAPE:
+            if self.in_dialogue:
+                self.in_dialogue = False
+                return
             arcade.exit()
             return
 
+        if self.in_dialogue:
+            if key == arcade.key.BACKSPACE:
+                self.dialog_input = self.dialog_input[:-1]
+            elif key == arcade.key.ENTER:
+                self.send_player_dialog()
+            return
+
+        if key == arcade.key.E:
+            if self.npc_to_talk and not self.in_dialogue:
+                self.start_npc_dialog(self.npc_to_talk)
+
         self.pressed_keys.add(key)
+
+    def on_text(self, text):
+        if self.in_dialogue:
+            self.dialog_input += text
 
     def on_key_release(self, key, modifiers):
         if key in self.pressed_keys:
             self.pressed_keys.remove(key)
 
+
+# -------------------- MAIN --------------------
 
 def main():
     game = Game()
