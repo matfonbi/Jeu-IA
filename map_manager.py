@@ -119,17 +119,33 @@ class MapManager:
                     texture_path = "assets/npcs/hotelier.png"
                 elif "serveur" in name:
                     texture_path = "assets/npcs/serveur.png"
+                elif "geolier" in name:
+                    texture_path = "assets/npcs/geolier.png"
+                elif "prisonier" in name:
+                    texture_path = "assets/npcs/prisonier.png"
+                elif "alchimiste" in name:
+                    texture_path = "assets/npcs/alchimiste.png"
+                elif "paysan" in name:
+                    texture_path = "assets/npcs/paysan.png"
+                elif "forgeron" in name:
+                    texture_path = "assets/npcs/forgeron.png"
                 else:
                     continue
 
-                sprite = arcade.Sprite(texture_path, scale=0.10)
+                # Récupération éventuelle du scale personnalisé
+                custom_scale = npc.properties.get("scale", 0.10)
+
+                sprite = arcade.Sprite(texture_path, scale=custom_scale)
+                sprite.npc_name = name
                 x, y = _extract_point(npc.shape)
                 sprite.center_x = x
                 sprite.center_y = y
+
                 self.npc_list.append(sprite)
 
                 # Zone d'interaction
-                zone = arcade.SpriteSolidColor(80, 80, (0, 0, 0, 0))
+                interaction_size = custom_scale * 400  # ajuste selon ta préférence
+                zone = arcade.SpriteSolidColor(int(interaction_size), int(interaction_size), (0, 0, 0, 0))
                 zone.center_x = x
                 zone.center_y = y
                 zone.npc_ref = sprite
@@ -175,4 +191,27 @@ class MapManager:
 
         # On ajoute le joueur
         player_layer.append(player_sprite)
+
+        # --------------------------- OBJETS RAMASSABLES ---------------------------
+        self.items = arcade.SpriteList()
+
+        if "Items" in self.tile_map.object_lists:
+            for obj in self.tile_map.object_lists["Items"]:
+                item_name = obj.name or "unknown"
+
+                # Texture depuis propriété Tiled
+                texture_path = obj.properties.get("texture", f"assets/objet/{item_name}.png")
+
+                # Option de scale (depuis Tiled)
+                item_scale = obj.properties.get("scale", 0.8)
+
+                sprite = arcade.Sprite(texture_path, scale=item_scale)
+
+                x, y = _extract_point(obj.shape)
+                sprite.center_x = x
+                sprite.center_y = y
+
+                sprite.item_id = item_name  # identifiant de l'objet
+                self.items.append(sprite)
+
 

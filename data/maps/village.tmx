@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextlayerid="17" nextobjectid="432">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextlayerid="18" nextobjectid="438">
  <tileset firstgid="1" source="terrain-map-v8.tsx"/>
  <tileset firstgid="15745" name="vten" tilewidth="32" tileheight="32" tilecount="3072" columns="32">
   <image source="victorian-tenement.png" width="1024" height="3072"/>
@@ -904,7 +904,7 @@
   <object id="117" x="2668.33" y="459.667" width="16" height="130.667"/>
   <object id="118" x="2788" y="464" width="270.667" height="122.667"/>
   <object id="119" x="2528" y="439.333" width="456" height="30.6667"/>
-  <object id="120" x="3062.67" y="10.6667" width="10.6667" height="601.333"/>
+  <object id="120" x="3062.67" y="10.6667" width="10.6667" height="572"/>
   <object id="121" x="3178.67" y="209.667" width="252" height="326.667"/>
   <object id="122" x="3622.33" y="302.333" width="92" height="180"/>
   <object id="123" x="3720" y="207.667" width="212" height="329.333"/>
@@ -1010,7 +1010,7 @@
   <object id="235" x="575" y="1776" width="277" height="338"/>
   <object id="236" x="609" y="1728" width="224" height="47"/>
   <object id="237" x="389" y="2522" width="282" height="38"/>
-  <object id="238" x="793" y="2254" width="103" height="230"/>
+  <object id="238" x="793" y="2254" width="103" height="48.6667"/>
   <object id="239" x="123" y="2773" width="41" height="39"/>
   <object id="240" x="261" y="2866" width="25" height="29"/>
   <object id="241" x="121" y="2990" width="43" height="26"/>
@@ -1088,10 +1088,10 @@
   <object id="320" x="316" y="3366" width="61" height="148"/>
   <object id="321" x="353" y="3191" width="253" height="293"/>
   <object id="322" x="373" y="3165" width="209" height="27"/>
-  <object id="323" x="694" y="3124" width="248" height="385"/>
+  <object id="323" x="680.667" y="3124" width="269.333" height="385"/>
   <object id="324" x="667" y="3498" width="34" height="35"/>
   <object id="325" x="694" y="3108" width="246" height="13"/>
-  <object id="326" x="1007" y="3111" width="187" height="388"/>
+  <object id="326" x="995" y="3111" width="223" height="388"/>
   <object id="327" x="1310" y="3075" width="164" height="416"/>
   <object id="328" x="1301" y="3081" width="7" height="402"/>
   <object id="329" x="1287" y="3095" width="13" height="394"/>
@@ -1133,7 +1133,7 @@
   <object id="367" x="1901" y="809" width="34" height="67"/>
   <object id="368" x="1711" y="811" width="33" height="65"/>
   <object id="369" x="2688" y="830" width="95" height="71"/>
-  <object id="374" x="963" y="497" width="26" height="41"/>
+  <object id="374" x="963" y="497" width="26" height="25"/>
   <object id="375" x="2805" y="633.5" width="32" height="32.5"/>
   <object id="376" x="672" y="2541" width="31" height="37"/>
   <object id="377" x="1322" y="2520" width="34" height="45"/>
@@ -1178,6 +1178,21 @@
   <object id="429" x="610.667" y="376" width="120" height="65.3333"/>
   <object id="430" x="837.333" y="385.333" width="148" height="61.3333"/>
   <object id="431" x="1090.67" y="362.667" width="125.333" height="80"/>
+  <object id="433" x="869.333" y="2346.67" width="22.6667" height="34.6667"/>
+  <object id="434" x="785.333" y="2380" width="62.6667" height="44"/>
+  <object id="435" x="870.667" y="2441.33" width="21.3333" height="37.3333"/>
+ </objectgroup>
+ <objectgroup id="17" name="Items">
+  <object id="432" name="potion" x="498.667" y="3916">
+   <properties>
+    <property name="scale" type="float" value="0.05"/>
+   </properties>
+  </object>
+  <object id="436" name="potion" x="3533.33" y="3128">
+   <properties>
+    <property name="scale" type="float" value="0.05"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="16" name="Transitions">
   <object id="413" name="entrance_big_tavern" x="744" y="2511">
@@ -1247,10 +1262,26 @@
   </data>
  </layer>
  <objectgroup id="13" name="NPCs">
-  <object id="8" name="npc_maire_village" x="974" y="516"/>
-  <object id="9" name="npc_comptesse" x="2820" y="646"/>
-  <object id="10" name="npc_hotelier" x="1338" y="2544"/>
-  <object id="11" name="npc_serveur" x="686" y="2568"/>
+  <object id="8" name="maire" x="974" y="516">
+   <properties>
+    <property name="scale" type="float" value="0.1"/>
+   </properties>
+  </object>
+  <object id="9" name="comptesse" x="2820" y="646">
+   <properties>
+    <property name="scale" type="float" value="0.1"/>
+   </properties>
+  </object>
+  <object id="10" name="hotelier" x="1338" y="2544">
+   <properties>
+    <property name="scale" type="float" value="0.1"/>
+   </properties>
+  </object>
+  <object id="11" name="serveur" x="686" y="2568">
+   <properties>
+    <property name="scale" type="float" value="0.1"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="15" name="Spawn">
   <object id="379" name="spawn_player" x="215" y="339"/>

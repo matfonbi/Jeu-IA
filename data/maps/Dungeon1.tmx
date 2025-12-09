@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="48" tilewidth="16" tileheight="16" infinite="0" nextlayerid="38" nextobjectid="137">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="64" height="48" tilewidth="16" tileheight="16" infinite="0" nextlayerid="39" nextobjectid="142">
  <tileset firstgid="1" name="cracked_tiles" tilewidth="16" tileheight="16" tilecount="256" columns="8">
   <image source="decorative_cracks_walls.png" width="128" height="512"/>
  </tileset>
@@ -5204,5 +5204,19 @@
   <object id="130" x="392.5" y="534" width="30.5" height="13.5"/>
   <object id="131" x="210" y="480" width="15.5" height="11"/>
   <object id="136" x="660" y="449" width="11" height="30.3333"/>
+  <object id="138" x="390.667" y="598" width="30" height="6.66667"/>
+  <object id="141" x="322.667" y="454" width="19.3333" height="23.3333"/>
+ </objectgroup>
+ <objectgroup id="38" name="NPCs">
+  <object id="137" name="geolier" x="404.667" y="603.333">
+   <properties>
+    <property name="scale" type="float" value="0.06"/>
+   </properties>
+  </object>
+  <object id="140" name="prisonier" x="332" y="469.333">
+   <properties>
+    <property name="scale" type="float" value="0.06"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>
