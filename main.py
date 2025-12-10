@@ -38,7 +38,9 @@ def wrap_dialog_history(dialog_history, max_width_px: float, font_size: int = 18
     lines = []
     for speaker, message in dialog_history:
         full = f"{speaker}: {message}"
-        lines.extend(wrap_text_to_width(full, max_width_px, font_size))
+        wrapped = wrap_text_to_width(full, max_width_px, font_size)
+        lines.extend(wrapped)
+        lines.append("")
     return lines
 
 
@@ -743,3 +745,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
