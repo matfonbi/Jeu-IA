@@ -5,6 +5,7 @@ from map_manager import MapManager, TILE_SCALING
 from npc_agent import NPC_Agent
 from dotenv import load_dotenv
 import os
+import json
 import textwrap
 
 load_dotenv()
@@ -573,48 +574,51 @@ class Game(arcade.Window):
     # ============================================================
 
     def start_npc_dialog(self, npc):
+        """Démarre une discussion avec un PNJ."""
         self.in_dialogue = True
         self.current_npc = npc
         self.dialog_scroll = 0
 
-        npc_folder = f"npc/{npc.npc_name}/"
-        context_path = npc_folder + "context.txt"
-        memory_path = npc_folder + "memory.json"
+        # Déterminer le dossier du PNJ (ex: npc/maire/)
+        npc_folder = f"npc/{npc.npc_name}"
 
-        self.npc_agent = NPC_Agent(
-            npc_name=npc.npc_name,
-            context_path=context_path,
-            memory_path=memory_path,
-        )
+        # Création de l'agent IA (NOUVEAU : il ne prend qu'un argument)
+        self.npc_agent = NPC_Agent(npc_folder)
 
-        # Inventaire sous forme de liste de noms d’objets
+        # Inventaire sous forme de liste
         inventory_items = list(self.inventory.keys())
 
+        # Choix automatique first_meeting / returning dans NPC_Agent
         first_message = self.npc_agent.start_dialog(inventory_items)
-        self.dialog_history = [(npc.npc_name.capitalize(), first_message)]
+
+        # Affichage dans la boîte de dialogue
+        display_name = npc.npc_name.capitalize()
+        self.dialog_history = [(display_name, first_message)]
         self.dialog_input = ""
 
+
     def send_player_dialog(self):
-        """Le joueur valide son message."""
+        """Traitement du message joueur + réponse IA."""
         msg = self.dialog_input.strip()
         if not msg:
             return
 
+        # Ajout dans l'affichage
         self.dialog_history.append(("Vous", msg))
 
-        # Réponse IA
+        # Réponse de l'IA
         npc_response = self.npc_agent.ask(
             player_message=msg,
             inventory_list=list(self.inventory.keys()),
         )
 
-        self.dialog_history.append(
-            (self.current_npc.npc_name.capitalize(), npc_response)
-        )
+        display_name = self.current_npc.npc_name.capitalize()
+        self.dialog_history.append((display_name, npc_response))
 
-        # On remet le scroll en bas
+        # Scroll au bas et reset input
         self.dialog_scroll = 0
         self.dialog_input = ""
+
 
     # ============================================================
     #                          INPUT
@@ -687,12 +691,22 @@ class Game(arcade.Window):
         else:
             self.dialog_scroll = max(self.dialog_scroll - 1, 0)
 
+def reset_all_memories():
+    base = "npc"
+    if not os.path.exists(base):
+        return
+    for folder in os.listdir(base):
+        memory_path = os.path.join(base, folder, "memory.json")
+        if os.path.isfile(memory_path):
+            with open(memory_path, "w", encoding="utf-8") as f:
+                json.dump([], f)
 
 # ============================================================
 #                           MAIN
 # ============================================================
 
 def main():
+    reset_all_memories()
     game = Game()
     game.setup()
     arcade.enable_timings()
