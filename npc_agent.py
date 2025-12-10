@@ -5,14 +5,14 @@ from groq import Groq
 
 class NPC_Agent:
     """
-    Un agent PNJ totalement modulaire :
-    - Lit tous les blocs du fichier context.txt
-    - Utilise first_meeting_prompt / returning_prompt
-    - Injecte personnalité / style / relations dans chaque requête
-    - Conserve une mémoire persistante (memory.json)
+    Agent PNJ modulaire avec :
+    - Lecture de context.txt (blocs [name], [style], [personality], etc.)
+    - Utilisation de first_meeting_prompt / returning_prompt
+    - Mémoire persistante dans memory.json
+    - Intégration optionnelle d'un contexte de quêtes (quest_context)
     """
 
-    def __init__(self, npc_folder: str):
+    def __init__(self, npc_folder: str, quest_context: str | None = None):
 
         # ---------------------
         # Dossiers / fichiers
@@ -20,6 +20,9 @@ class NPC_Agent:
         self.npc_folder = npc_folder
         self.context_path = os.path.join(npc_folder, "context.txt")
         self.memory_path = os.path.join(npc_folder, "memory.json")
+
+        # Contexte de quêtes (texte préformaté fourni par le QuestManager)
+        self.quest_context = quest_context or ""
 
         # ---------------------
         # Lecture du fichier de contexte
@@ -39,7 +42,7 @@ class NPC_Agent:
         try:
             with open(self.memory_path, "r", encoding="utf-8") as f:
                 self.history = json.load(f)
-        except:
+        except Exception:
             self.history = []
             with open(self.memory_path, "w", encoding="utf-8") as f:
                 json.dump([], f)
@@ -50,8 +53,7 @@ class NPC_Agent:
         self.client = Groq(api_key=os.environ["GROQ_KEY"])
 
         # Modèle IA
-        self.model = "llama-3.3-70b-versatile"  # modèle actuel recommandé
-
+        self.model = "llama-3.3-70b-versatile"
 
     # --------------------------------------------------------------
     # LECTURE DU FICHIER CONTEXTE
@@ -66,7 +68,6 @@ class NPC_Agent:
           ...
         }
         """
-
         if not os.path.exists(self.context_path):
             return {}
 
@@ -95,14 +96,13 @@ class NPC_Agent:
 
         return data
 
-
     # --------------------------------------------------------------
     # GÉNÈRE LE MESSAGE SYSTEM POUR GUIDER L’IA
     # --------------------------------------------------------------
     def build_system_prompt(self):
         """
         Assemble style + personnalité + relations + lore du PNJ
-        dans un message system.
+        + contexte de quêtes éventuel dans un message system.
         """
 
         parts = []
@@ -125,17 +125,28 @@ class NPC_Agent:
             "présentes dans la mémoire. Ne contredis jamais l’historique."
         )
 
-        return "\n\n".join(parts)
+        # Infos de QUÊTES (optionnelles)
+        if self.quest_context:
+            parts.append(
+                "INFORMATIONS SUR LES QUÊTES LIÉES À CE PNJ (À UTILISER UNIQUEMENT POUR GUIDER TON COMPORTEMENT) :\n"
+                f"{self.quest_context}"
+            )
 
+        return "\n\n".join(parts)
 
     # --------------------------------------------------------------
     # PREMIÈRE PHRASE QUAND LE DIALOGUE COMMENCE
     # --------------------------------------------------------------
-    def start_dialog(self, inventory):
+    def start_dialog(self, inventory, quest_context: str | None = None):
         """
         Choisit first_meeting_prompt ou returning_prompt selon la mémoire,
         puis appelle ask().
+        inventory = liste d'objets (noms) possédés par le joueur.
+        quest_context : éventuellement un nouveau texte de contexte de quêtes.
         """
+
+        if quest_context is not None:
+            self.quest_context = quest_context
 
         if len(self.history) == 0:
             greeting = self.context.get(
@@ -150,15 +161,18 @@ class NPC_Agent:
 
         return self.ask(greeting, inventory)
 
-
     # --------------------------------------------------------------
     # ENVOI D’UN MESSAGE DU JOUEUR ET RÉPONSE DU PNJ
     # --------------------------------------------------------------
-    def ask(self, player_message: str, inventory_list):
+    def ask(self, player_message: str, inventory_list, quest_context: str | None = None):
         """
-        message = ce que le joueur dit
-        inventory_list = liste des objets
+        player_message = ce que le joueur dit
+        inventory_list = liste des objets (noms) possédés par le joueur
+        quest_context = éventuellement un contexte de quêtes mis à jour
         """
+
+        if quest_context is not None:
+            self.quest_context = quest_context
 
         system_prompt = self.build_system_prompt()
 

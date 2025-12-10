@@ -1,5 +1,4 @@
 import arcade
-
 from player import Player
 from map_manager import MapManager, TILE_SCALING
 from npc_agent import NPC_Agent
@@ -7,6 +6,8 @@ from dotenv import load_dotenv
 import os
 import json
 import textwrap
+from quest_manager import QuestManager
+
 
 load_dotenv()
 
@@ -63,6 +64,10 @@ class Game(arcade.Window):
         self.map_manager = MapManager(self)
 
         self.player_speed = BASE_PLAYER_SPEED
+        # Gestionnaire centralisé de quêtes
+        self.quest_manager = QuestManager()
+        # Toutes les quêtes sont en mémoire uniquement, déjà à l'état "locked" au démarrage.
+
 
         # Entrées clavier
         self.pressed_keys: set[int] = set()
@@ -582,10 +587,20 @@ class Game(arcade.Window):
         # Déterminer le dossier du PNJ (ex: npc/maire/)
         npc_folder = f"npc/{npc.npc_name}"
 
-        # Création de l'agent IA (NOUVEAU : il ne prend qu'un argument)
-        self.npc_agent = NPC_Agent(npc_folder)
+        # --- Mise à jour des quêtes AVANT de lancer le dialogue ---
+        quest_prompt = ""
+        if self.quest_manager:
+            events, quest_prompt = self.quest_manager.handle_npc_interaction(
+                npc_name=npc.npc_name,
+                inventory=self.inventory,
+            )
+            # events["activated"] et events["completed"] sont disponibles
+            # si tu veux plus tard afficher un log ou un message.
 
-        # Inventaire sous forme de liste
+        # Création de l'agent IA avec contexte de quêtes
+        self.npc_agent = NPC_Agent(npc_folder, quest_prompt)
+
+        # Inventaire sous forme de liste (noms des objets possédés)
         inventory_items = list(self.inventory.keys())
 
         # Choix automatique first_meeting / returning dans NPC_Agent
@@ -597,14 +612,26 @@ class Game(arcade.Window):
         self.dialog_input = ""
 
 
+
     def send_player_dialog(self):
         """Traitement du message joueur + réponse IA."""
         msg = self.dialog_input.strip()
         if not msg:
             return
 
-        # Ajout dans l'affichage
+        # Ajout du message joueur dans l'affichage
         self.dialog_history.append(("Vous", msg))
+
+        # --- Mise à jour du contexte de quêtes pour ce PNJ ---
+        quest_prompt = ""
+        if self.quest_manager and self.current_npc is not None:
+            events, quest_prompt = self.quest_manager.handle_npc_interaction(
+                npc_name=self.current_npc.npc_name,
+                inventory=self.inventory,
+            )
+            # On met à jour le contexte de quêtes de l'agent PNJ
+            if quest_prompt:
+                self.npc_agent.quest_context = quest_prompt
 
         # Réponse de l'IA
         npc_response = self.npc_agent.ask(
@@ -618,6 +645,7 @@ class Game(arcade.Window):
         # Scroll au bas et reset input
         self.dialog_scroll = 0
         self.dialog_input = ""
+
 
 
     # ============================================================
