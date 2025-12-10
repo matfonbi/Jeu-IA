@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextlayerid="18" nextobjectid="438">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="128" height="128" tilewidth="32" tileheight="32" infinite="0" nextlayerid="18" nextobjectid="446">
  <tileset firstgid="1" source="terrain-map-v8.tsx"/>
  <tileset firstgid="15745" name="vten" tilewidth="32" tileheight="32" tilecount="3072" columns="32">
   <image source="victorian-tenement.png" width="1024" height="3072"/>
@@ -953,7 +953,7 @@
   <object id="174" x="895" y="1152" width="224" height="63"/>
   <object id="175" x="869" y="1188" width="25" height="34"/>
   <object id="176" x="863" y="1235" width="477" height="327"/>
-  <object id="177" x="1676" y="1474" width="82" height="59"/>
+  <object id="177" x="1716.5" y="1485.17" width="36" height="11.7952"/>
   <object id="178" x="1671" y="1293" width="45" height="109"/>
   <object id="179" x="1764" y="1264" width="117" height="333"/>
   <object id="180" x="1955" y="1313" width="56" height="27"/>
@@ -1070,7 +1070,7 @@
   <object id="302" x="2818" y="3454" width="219" height="158"/>
   <object id="303" x="1952" y="2689" width="763" height="319"/>
   <object id="304" x="2052" y="3109" width="85" height="17"/>
-  <object id="305" x="1949" y="3145" width="32" height="97"/>
+  <object id="305" x="1960" y="3145" width="15" height="76"/>
   <object id="306" x="1952" y="3299" width="30" height="108"/>
   <object id="307" x="2046" y="3341" width="62" height="83"/>
   <object id="308" x="2145" y="3393" width="58" height="61"/>
@@ -1181,6 +1181,10 @@
   <object id="433" x="869.333" y="2346.67" width="22.6667" height="34.6667"/>
   <object id="434" x="785.333" y="2380" width="62.6667" height="44"/>
   <object id="435" x="870.667" y="2441.33" width="21.3333" height="37.3333"/>
+  <object id="442" x="1706.5" y="1496" width="23" height="11"/>
+  <object id="443" x="1692.5" y="1501.5" width="22" height="11.5"/>
+  <object id="444" x="1683" y="1509.5" width="20.5" height="11"/>
+  <object id="445" x="1667" y="1513" width="23" height="8"/>
  </objectgroup>
  <objectgroup id="17" name="Items">
   <object id="432" name="potion" x="498.667" y="3916">
@@ -1189,6 +1193,21 @@
    </properties>
   </object>
   <object id="436" name="potion" x="3533.33" y="3128">
+   <properties>
+    <property name="scale" type="float" value="0.05"/>
+   </properties>
+  </object>
+  <object id="438" name="tonnelet" x="334.364" y="3355.03">
+   <properties>
+    <property name="scale" type="float" value="0.1"/>
+   </properties>
+  </object>
+  <object id="439" name="marteau_forgeron" x="1969.33" y="3213.33">
+   <properties>
+    <property name="scale" type="float" value="0.05"/>
+   </properties>
+  </object>
+  <object id="441" name="papier_preuve" x="1693.33" y="1508">
    <properties>
     <property name="scale" type="float" value="0.05"/>
    </properties>

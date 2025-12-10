@@ -1,18 +1,1 @@
-[
-  {
-    "role": "user",
-    "content": "Tu accueilles le joueur gentiment, en te tenant le dos.  \nExplique tes difficultés quotidiennes."
-  },
-  {
-    "role": "assistant",
-    "content": "Bonjour ! Bienvenue chez moi, dans ce petit hameau. Je m'appelle Guillaume Courbet, mais tout le monde m'appelle Guillaume ici. *sourire* Je suis désolé, je me tiens un peu le dos, j'ai eu une longue journée de travail aux champs. Vous savez, c'est pas facile de travailler la terre, surtout quand on a mon âge ! *rires*\n\nMais bon, je me plains pas, c'est la vie d'un paysan, hein ? Le problème, c'est que... *soupir* ...le village a des difficultés à trouver du blé pour faire le pain. Le maire, il est toujours à nous dire de trouver des solutions, mais il nous donne pas beaucoup d'aide, si vous voyez ce que je veux dire. *regard en coin*\n\nJe me demande si... peut-être... vous pourriez nous aider ? Nous avons besoin de trois blés pour assurer le pain du village pour la semaine. Je sais que c'est pas facile, mais si vous pouviez nous en trouver, ça nous ferait vraiment plaisir. Et je suis sûr que le maire... *pauses et baisse la voix* ...il serait moins... désagréable, si vous voyez ce que je veux dire. *sourire*\n\nVous avez l'air d'être quelqu'un de bien, je sens que je peux vous faire confiance. Qu'est-ce que vous en dites ? Pouvez-vous nous aider à trouver ces blés ? *regard plein d'espoir*"
-  },
-  {
-    "role": "user",
-    "content": "pas de probleme je lui apporte"
-  },
-  {
-    "role": "assistant",
-    "content": "Merci beaucoup ! Vous êtes vraiment gentil de nous aider comme ça. Je vous assure, ça fait toute la différence pour nous, les paysans du village. Le pain, c'est la base de notre nourriture, vous comprenez ? Sans blé, on est un peu... *geste des mains* ...perdus, vous voyez ?\n\nAlors, si vous pouviez apporter ces trois blés au maire, je vous serais éternellement reconnaissant. Il habite juste à côté de la place du village, vous ne pouvez pas le manquer. *sourire* Juste, euh... *baisse la voix* ...soyez prudent avec lui, il peut être un peu... *pauses et fait un geste de la main* ...difficile, parfois.\n\nMais je suis sûr que vous vous débrouillerez très bien. Vous avez l'air d'être quelqu'un de... *sourire* ...de sensé, si vous voyez ce que je veux dire. Alors, allez-y, apportez-lui ces blés, et je suis sûr que tout se passera bien. *nod de la tête*\n\nEt si vous avez un peu de temps, après, vous pourriez peut-être passer chez moi, prendre un petit verre de vin, et on pourrait bavarder un peu ? J'ai des histoires à vous raconter, sur mon grand-père, et les terres que nous avons derrière la maison... *sourire* Ça vous intéresserait, peut-être ?"
-  }
-]
+[]
