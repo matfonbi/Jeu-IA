@@ -2,11 +2,52 @@ import arcade
 
 from player import Player
 from map_manager import MapManager, TILE_SCALING
+from npc_agent import NPC_Agent
+from dotenv import load_dotenv
+import os
+import textwrap
+
+load_dotenv()
 
 SCREEN_TITLE = "RPG Medieval"
-BASE_PLAYER_SPEED = 4 
+BASE_PLAYER_SPEED = 4
 DEBUG_COLLISION = False
 
+
+# ============================================================
+#        UTILITAIRES TEXTE : WRAP + COMPTAGE LIGNES
+# ============================================================
+
+def wrap_text_to_width(text: str, max_width_px: float, font_size: int = 18):
+    """
+    Approximates wrapping by converting pixel width → max characters.
+    Works on all Arcade versions without needing text measurement.
+    """
+    approx_char_width = font_size * 0.6  # heuristique : 0.6 * font_size
+    max_chars = max(1, int(max_width_px / approx_char_width))
+    return textwrap.wrap(text, width=max_chars)
+
+
+def wrap_dialog_history(dialog_history, max_width_px: float, font_size: int = 18):
+    """
+    Transforme l'historique [(speaker, msg), ...] en une liste de lignes déjà wrap.
+    Chaque entrée est un simple string prêt à être affiché.
+    """
+    lines = []
+    for speaker, message in dialog_history:
+        full = f"{speaker}: {message}"
+        lines.extend(wrap_text_to_width(full, max_width_px, font_size))
+    return lines
+
+
+def count_wrapped_lines(dialog_history, max_width_px: float, font_size: int = 18):
+    """Nombre total de lignes une fois le wrapping appliqué."""
+    return len(wrap_dialog_history(dialog_history, max_width_px, font_size))
+
+
+# ============================================================
+#                           GAME
+# ============================================================
 
 class Game(arcade.Window):
     def __init__(self):
@@ -24,18 +65,16 @@ class Game(arcade.Window):
 
         # Entrées clavier
         self.pressed_keys: set[int] = set()
+        self.dialog_scroll = 0  # offset de scroll (en lignes)
 
         arcade.set_background_color(arcade.color.BLACK)
 
-        self.inventory = {}
-        self.item_to_pick = None
-
-        # ---------- INVENTAIRE ----------
+        # ---------- INVENTAIRE & ITEMS ----------
+        self.inventory = {}        # {item_id: quantité}
+        self.item_to_pick = None   # sprite d'item détecté proche
         self.inventory_open = False
         self.inventory_slot_size = 64
         self.inventory_padding = 12
-
-
 
         # Valeurs par défaut
         self.default_zoom = 1.0
@@ -64,13 +103,14 @@ class Game(arcade.Window):
 
         # -------------------- DIALOGUES PNJ --------------------
         self.in_dialogue = False
-        self.dialog_history = []
-        self.dialog_input = ""
+        self.dialog_history = []   # liste de (speaker, message)
+        self.dialog_input = ""     # texte en cours de saisie
         self.current_npc = None
         self.npc_to_talk = None   # PNJ détecté dans zone
 
-
-    # -------------------- TRANSITION --------------------
+    # ============================================================
+    #                       TRANSITION
+    # ============================================================
 
     def start_transition(self, callback):
         """Lance un fade-out avant la transition."""
@@ -79,8 +119,9 @@ class Game(arcade.Window):
         self.transition_target = 255.0
         self.transition_callback = callback
 
-
-    # -------------------- REGLAGES PAR MAP --------------------
+    # ============================================================
+    #                  REGLAGES PAR MAP
+    # ============================================================
 
     def apply_map_settings(self, map_name: str):
         name = map_name.lower()
@@ -114,15 +155,17 @@ class Game(arcade.Window):
             self.player.scale = self.default_player_scale
             self.player_speed = BASE_PLAYER_SPEED
 
-
-    # -------------------- SETUP --------------------
+    # ============================================================
+    #                          SETUP
+    # ============================================================
 
     def setup(self):
         self.map_manager.load_map("village", "spawn_player", self.player)
         self.apply_map_settings("village")
 
-
-    # -------------------- DRAW --------------------
+    # ============================================================
+    #                          DRAW
+    # ============================================================
 
     def on_draw(self):
         self.clear()
@@ -175,52 +218,93 @@ class Game(arcade.Window):
                 self.bubble_sprite.center_y - 40,
                 arcade.color.WHITE,
                 18,
-                anchor_x="center"
+                anchor_x="center",
             )
 
-        # ----------- FENÊTRE DE DIALOGUE -----------
+        # ==========================
+        #     BOÎTE DE DIALOGUE
+        # ==========================
         if self.in_dialogue:
             win_w, win_h = self.get_size()
 
-            # Boîte noire
+            # Dimensions dynamiques
+            box_margin = 50
+            box_width = win_w - box_margin * 2
+            box_height = int(win_h * 0.40)  # 40 % de la hauteur écran
+            box_x = box_margin
+            box_y = box_margin
+
+            # Fond
             arcade.draw_lbwh_rectangle_filled(
-                50,
-                50,
-                win_w - 100,
-                200,
+                box_x, box_y, box_width, box_height,
                 (0, 0, 0, 200),
             )
 
-            # Historique
-            y = 220
-            for speaker, message in self.dialog_history[-4:]:
-                arcade.draw_text(
-                    f"{speaker}: {message}",
-                    70,
-                    y,
-                    arcade.color.WHITE,
-                    16,
-                )
-                y -= 28
+            # ----- Zone d’écriture -----
+            input_height = 45
+            input_box_y = box_y + 10
+            input_box_x = box_x + 15
+            input_box_w = box_width - 30
 
-            # Zone d’écriture
             arcade.draw_lbwh_rectangle_outline(
-                60,
-                60,
-                win_w - 120,
-                40,
+                input_box_x,
+                input_box_y,
+                input_box_w,
+                input_height,
                 arcade.color.WHITE,
                 2,
             )
 
             arcade.draw_text(
                 self.dialog_input,
-                70,
-                70,
+                input_box_x + 10,
+                input_box_y + 12,
                 arcade.color.WHITE,
-                18
+                18,
             )
 
+            # ----- Zone d’historique -----
+            history_top = box_y + box_height - 20
+            history_bottom = input_box_y + input_height + 15
+
+            available_height = history_top - history_bottom
+            line_height = 24
+            max_lines_on_screen = max(1, available_height // line_height)
+
+            # Toutes les lignes wrap
+            max_width_px = box_width - 40
+            wrapped_lines = wrap_dialog_history(
+                self.dialog_history,
+                max_width_px,
+                font_size=18,
+            )
+
+            total_lines = len(wrapped_lines)
+            if total_lines == 0:
+                display_lines = []
+            else:
+                # Clamp du scroll
+                max_scroll = max(0, total_lines - max_lines_on_screen)
+                self.dialog_scroll = max(0, min(self.dialog_scroll, max_scroll))
+
+                # On part du bas (dernières lignes) + offset de scroll
+                start_index = max(0, total_lines - max_lines_on_screen - self.dialog_scroll)
+                end_index = start_index + max_lines_on_screen
+                display_lines = wrapped_lines[start_index:end_index]
+
+            # Affichage des lignes
+            y = history_top
+            for line in display_lines:
+                arcade.draw_text(
+                    line,
+                    box_x + 20,
+                    y,
+                    arcade.color.WHITE,
+                    18,
+                )
+                y -= line_height
+
+        # ---------- Texte "Ramasser (E)" pour les items ----------
         if self.item_to_pick and not self.in_dialogue:
             arcade.draw_text(
                 f"Ramasser {self.item_to_pick.item_id} (E)",
@@ -228,16 +312,15 @@ class Game(arcade.Window):
                 self.bubble_sprite.center_y - 40,
                 arcade.color.WHITE,
                 18,
-                anchor_x="center"
+                anchor_x="center",
             )
-        
-        # ============================
-        #     INVENTAIRE (I)
-        # ============================
+
+        # ==========================
+        #        INVENTAIRE (I)
+        # ==========================
         if self.inventory_open:
             win_w, win_h = self.get_size()
 
-            # Fond de l’inventaire
             width = 600
             height = 400
             x = (win_w - width) / 2
@@ -248,7 +331,7 @@ class Game(arcade.Window):
                 y,
                 width,
                 height,
-                (20, 20, 20, 230)
+                (20, 20, 20, 230),
             )
 
             arcade.draw_lbwh_rectangle_outline(
@@ -257,20 +340,18 @@ class Game(arcade.Window):
                 width,
                 height,
                 arcade.color.WHITE,
-                3
+                3,
             )
 
-            # Titre
             arcade.draw_text(
                 "Inventaire",
                 x + width / 2,
                 y + height - 40,
                 arcade.color.WHITE,
                 28,
-                anchor_x="center"
+                anchor_x="center",
             )
 
-            # Affichage des slots
             slot = self.inventory_slot_size
             pad = self.inventory_padding
 
@@ -278,16 +359,12 @@ class Game(arcade.Window):
             col = 0
 
             for item_name, quantity in self.inventory.items():
-
-                # Position du slot
                 sx = x + 40 + col * (slot + pad)
                 sy = y + height - 120 - row * (slot + pad)
 
-                # Slot visuel
                 arcade.draw_lbwh_rectangle_filled(sx, sy, slot, slot, (60, 60, 60, 200))
                 arcade.draw_lbwh_rectangle_outline(sx, sy, slot, slot, arcade.color.WHITE, 2)
 
-                # ----------- Icône de l’objet -----------
                 texture_path = f"assets/objet/{item_name}.png"
                 texture = arcade.load_texture(texture_path)
 
@@ -296,40 +373,34 @@ class Game(arcade.Window):
                 icon.center_y = sy + slot / 2
                 icon.width = slot * 0.8
                 icon.height = slot * 0.8
-
-                # ⚠️ Arcade 3.3.3 : un sprite seul ne peut PAS être dessiné → SpriteList obligatoire
                 temp_list = arcade.SpriteList()
                 temp_list.append(icon)
                 temp_list.draw()
 
-
-                # Quantité
                 arcade.draw_text(
                     str(quantity),
                     sx + slot - 10,
                     sy + 5,
                     arcade.color.WHITE,
                     14,
-                    anchor_x="right"
+                    anchor_x="right",
                 )
 
-                # Gestion grid 4 colonnes
                 col += 1
                 if col >= 4:
                     col = 0
                     row += 1
 
-
-
-    # -------------------- UPDATE --------------------
+    # ============================================================
+    #                          UPDATE
+    # ============================================================
 
     def on_update(self, delta_time: float):
         if self.in_dialogue:
             return
-        
+
         if self.inventory_open:
             return
-
 
         self.player.remember_position()
 
@@ -338,6 +409,7 @@ class Game(arcade.Window):
         self.player.change_y = 0
 
         speed = self.player_speed
+
         # Contrôles
         if arcade.key.UP in self.pressed_keys or arcade.key.Z in self.pressed_keys:
             self.player.change_y += speed
@@ -364,39 +436,26 @@ class Game(arcade.Window):
         if arcade.key.E in self.pressed_keys:
             self.check_for_map_transition()
 
-        # -------------------------------------------------
-        # Détection PNJ + Bulle PNJ
-        # -------------------------------------------------
+        # ----------------- Détection PNJ -----------------
         self.npc_to_talk = None
-
-        npc_zones = self.map_manager.npc_interactions  # PAS dans la scene
+        npc_zones = self.map_manager.npc_interactions
 
         if npc_zones:
             detected = arcade.check_for_collision_with_list(self.player, npc_zones)
             if detected:
                 zone = detected[0]
                 self.npc_to_talk = zone.npc_ref
-        
-        # -------------------------------------------------
-        # Bulle PNJ lorsqu’on est dans une zone d’interaction
-        # -------------------------------------------------
+
+        # Position de la bulle PNJ
         if self.npc_to_talk and not self.in_dialogue:
             cam_x, cam_y = self.camera.position
             win_w, win_h = self.get_size()
-
-            # Position de la bulle au-dessus du joueur
             screen_x = self.player.center_x - cam_x + win_w / 2
             screen_y = self.player.center_y - cam_y + win_h / 2 + 50
-
             self.bubble_sprite.center_x = screen_x
             self.bubble_sprite.center_y = screen_y
 
-
-
-
-        # -------------------------------------------------
-        # Bulle transition
-        # -------------------------------------------------
+        # ----------------- Bulle transition -----------------
         hits = arcade.check_for_collision_with_list(
             self.player, self.map_manager.transitions
         )
@@ -404,19 +463,15 @@ class Game(arcade.Window):
         if hits and not self.in_dialogue:
             cam_x, cam_y = self.camera.position
             win_w, win_h = self.get_size()
-
             screen_x = self.player.center_x - cam_x + win_w / 2
             screen_y = self.player.center_y - cam_y + win_h / 2 + 50
-
             self.bubble_sprite.center_x = screen_x
             self.bubble_sprite.center_y = screen_y
             self.show_bubble = True
         else:
             self.show_bubble = False
 
-        # -------------------------------------------------
-        # Animation du fade-in / fade-out
-        # -------------------------------------------------
+        # ----------------- Animation du fade -----------------
         if self.transition_alpha != self.transition_target:
             if self.transition_alpha < self.transition_target:
                 self.transition_alpha += self.transition_speed
@@ -432,14 +487,13 @@ class Game(arcade.Window):
                 self.transition_alpha -= self.transition_speed
                 if self.transition_alpha <= self.transition_target:
                     self.transition_alpha = self.transition_target
-        
-        # Détection d’un objet ramassable
+
+        # ----------------- Détection d’un objet ramassable -----------------
         hits = arcade.check_for_collision_with_list(self.player, self.map_manager.items)
 
         if hits:
             nearest = hits[0]
 
-            # Position bulle "Ramasser (E)"
             cam_x, cam_y = self.camera.position
             win_w, win_h = self.get_size()
             screen_x = self.player.center_x - cam_x + win_w / 2
@@ -452,9 +506,9 @@ class Game(arcade.Window):
         else:
             self.item_to_pick = None
 
-
-
-    # -------------------- CAMERA --------------------
+    # ============================================================
+    #                          CAMERA
+    # ============================================================
 
     def update_camera(self):
         if not self.map_manager.tile_map:
@@ -488,8 +542,9 @@ class Game(arcade.Window):
 
         self.camera.position = (cam_x, cam_y)
 
-
-    # -------------------- TRANSITIONS DE MAP --------------------
+    # ============================================================
+    #                    TRANSITIONS DE MAP
+    # ============================================================
 
     def check_for_map_transition(self):
         hits = arcade.check_for_collision_with_list(
@@ -513,18 +568,31 @@ class Game(arcade.Window):
 
         self.start_transition(do_change)
 
-
-    # -------------------- DIALOGUES --------------------
+    # ============================================================
+    #                      DIALOGUES
+    # ============================================================
 
     def start_npc_dialog(self, npc):
         self.in_dialogue = True
         self.current_npc = npc
+        self.dialog_scroll = 0
 
-        self.dialog_history = [
-            (npc.npc_name.capitalize(), "Bonjour, voyageur. Comment puis-je vous aider ?")
-        ]
+        npc_folder = f"npc/{npc.npc_name}/"
+        context_path = npc_folder + "context.txt"
+        memory_path = npc_folder + "memory.json"
+
+        self.npc_agent = NPC_Agent(
+            npc_name=npc.npc_name,
+            context_path=context_path,
+            memory_path=memory_path,
+        )
+
+        # Inventaire sous forme de liste de noms d’objets
+        inventory_items = list(self.inventory.keys())
+
+        first_message = self.npc_agent.start_dialog(inventory_items)
+        self.dialog_history = [(npc.npc_name.capitalize(), first_message)]
         self.dialog_input = ""
-
 
     def send_player_dialog(self):
         """Le joueur valide son message."""
@@ -534,29 +602,46 @@ class Game(arcade.Window):
 
         self.dialog_history.append(("Vous", msg))
 
-        # ------ Réponse PNJ (version statique pour l'instant) ------
-        response = "Je suis un PNJ simple… mais bientôt connecté à une IA !"
-        self.dialog_history.append((self.current_npc.npc_name.capitalize(), response))
+        # Réponse IA
+        npc_response = self.npc_agent.ask(
+            player_message=msg,
+            inventory_list=list(self.inventory.keys()),
+        )
 
+        self.dialog_history.append(
+            (self.current_npc.npc_name.capitalize(), npc_response)
+        )
+
+        # On remet le scroll en bas
+        self.dialog_scroll = 0
         self.dialog_input = ""
 
-
-    # -------------------- INPUT --------------------
+    # ============================================================
+    #                          INPUT
+    # ============================================================
 
     def on_key_press(self, key, modifiers):
+        # ESC
         if key == arcade.key.ESCAPE:
             if self.in_dialogue:
                 self.in_dialogue = False
                 return
             arcade.exit()
             return
-        
+
         # Ouvrir / fermer inventaire
         if key == arcade.key.I and not self.in_dialogue:
             self.inventory_open = not self.inventory_open
             return
 
+        # Démarrer dialogue avec PNJ
+        if key == arcade.key.E:
+            if self.npc_to_talk and not self.in_dialogue:
+                self.start_npc_dialog(self.npc_to_talk)
 
+        self.pressed_keys.add(key)
+
+        # Saisie texte du dialogue
         if self.in_dialogue:
             if key == arcade.key.BACKSPACE:
                 self.dialog_input = self.dialog_input[:-1]
@@ -564,29 +649,14 @@ class Game(arcade.Window):
                 self.send_player_dialog()
             return
 
+        # Ramasser un item
         if key == arcade.key.E:
-            if self.npc_to_talk and not self.in_dialogue:
-                self.start_npc_dialog(self.npc_to_talk)
-
-        self.pressed_keys.add(key)
-
-        if key == arcade.key.E:
-    
-            # Ramasser un item
             if self.item_to_pick:
                 item = self.item_to_pick
-
-                # Ajouter à l'inventaire
                 self.inventory[item.item_id] = self.inventory.get(item.item_id, 0) + 1
-
-                # Retirer du jeu
                 item.remove_from_sprite_lists()
-
-                # Message dans la console
                 print(f"Ramassé : {item.item_id} → inventaire : {self.inventory}")
-
                 return
-
 
     def on_text(self, text):
         if self.in_dialogue:
@@ -596,8 +666,31 @@ class Game(arcade.Window):
         if key in self.pressed_keys:
             self.pressed_keys.remove(key)
 
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        """Scroll dans la boîte de dialogue avec la molette."""
+        if not self.in_dialogue:
+            return
 
-# -------------------- MAIN --------------------
+        # Recalcule le total de lignes wrap
+        win_w, win_h = self.get_size()
+        box_width = win_w - 100
+        total_lines = count_wrapped_lines(self.dialog_history, box_width - 40, font_size=18)
+
+        history_height = int(win_h * 0.40) - 80
+        line_height = 24
+        max_visible_lines = max(1, history_height // line_height)
+        max_scroll = max(0, total_lines - max_visible_lines)
+
+        # scroll_y > 0 = roue vers le haut
+        if scroll_y > 0:
+            self.dialog_scroll = min(self.dialog_scroll + 1, max_scroll)
+        else:
+            self.dialog_scroll = max(self.dialog_scroll - 1, 0)
+
+
+# ============================================================
+#                           MAIN
+# ============================================================
 
 def main():
     game = Game()

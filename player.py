@@ -1,9 +1,6 @@
 import arcade
 
 
-PLAYER_SPEED = 4  # juste pour référence, pas utilisé ici directement
-
-
 class Player(arcade.AnimatedWalkingSprite):
     """
     Joueur animé 4 directions.
