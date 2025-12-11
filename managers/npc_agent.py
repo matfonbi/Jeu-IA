@@ -119,11 +119,24 @@ class NPC_Agent:
         if "lore" in self.context:
             parts.append(f"LORE :\n{self.context['lore']}")
 
-        # Rappel sur la mémoire
+                # Rappel sur la mémoire
         parts.append(
             "IMPORTANT : Tu dois prendre en compte toutes les conversations précédentes "
             "présentes dans la mémoire. Ne contredis jamais l’historique.Si le joueur te dis qu'il possède un objet tu dois toujours vérifier dans son inventaire si ce qu'il dis est vrai, ne le crois jamais sur parole, si l'objet n'est pas dans son inventaire alors qu'il dis qu'il le possede, tu dois etre choqué car il te ment. Ne te fie qu'a l'inventaire, priorise ce que tu vois dans l'inventaire au dessus de ce que pretends le joueur."
         )
+
+        # FORMAT DE RÉPONSE
+        parts.append(
+            "FORME DE RÉPONSE OBLIGATOIRE :\n"
+            "Tu dois TOUJOURS répondre UNIQUEMENT avec un JSON valide, sans texte avant ou après.\n"
+            "Format exact :\n"
+            "{\n"
+            '  \"response_text\": \"<ce que tu dirais normalement au joueur en français>\",\n'
+            '  \"emotion\": \"tres_positive\" | \"positive\" | \"neutre\" | \"negative\" | \"tres_negative\"\n"'
+            "}\n"
+            "Ne mets pas de commentaires, pas de code block ```json, uniquement l'objet JSON.Emotions doit representer comment tu ressens l'interaction avec le joueurs, si tu la trouve positive ou non, si le personnage te complimente, prends ca de maniere positive et si il t'insulte, de maniere negative"
+        )
+
 
         # Infos de QUÊTES (optionnelles)
         if self.quest_context:
@@ -133,6 +146,45 @@ class NPC_Agent:
             )
 
         return "\n\n".join(parts)
+
+    # --------------------------------------------------------------
+    # PARSING JSON EN PROVENANCE DU LLM
+    # --------------------------------------------------------------
+    def _parse_llm_json(self, raw_content: str) -> dict:
+        """
+        Essaie de parser la réponse du LLM en JSON.
+        Si ça échoue, on fallback sur un format par défaut.
+        """
+        text = raw_content.strip()
+
+        # Cas où le modèle renvoie ```json ... ```
+        if text.startswith("```"):
+            # On essaie d'extraire la partie entre le premier '{' et le dernier '}'
+            first = text.find("{")
+            last = text.rfind("}")
+            if first != -1 and last != -1 and last > first:
+                text = text[first:last+1]
+
+        # Sinon, on prend tel quel et on tente un json.loads dessus
+        import json
+        try:
+            data = json.loads(text)
+        except Exception:
+            # Fallback : on considère que le modèle a répondu du texte brut
+            return {
+                "response_text": raw_content,
+                "emotion": "neutre",
+            }
+
+        # Normalisation minimale
+        if "response_text" not in data:
+            # Tolérance : certains prompts pourraient utiliser "texte"
+            data["response_text"] = data.get("texte", raw_content)
+
+        if "emotion" not in data:
+            data["emotion"] = "neutre"
+
+        return data
 
     # --------------------------------------------------------------
     # PREMIÈRE PHRASE QUAND LE DIALOGUE COMMENCE
@@ -205,13 +257,19 @@ class NPC_Agent:
             temperature=0.7
         )
 
-        npc_response = response.choices[0].message.content
+        raw_content = response.choices[0].message.content
 
-        # Sauvegarde mémoire
+        # --- PARSING JSON ---
+        data = self._parse_llm_json(raw_content)
+        npc_response_text = data.get("response_text", raw_content)
+
+        # Sauvegarde mémoire (on ne stocke QUE le texte RP)
         self.history.append({"role": "user", "content": player_message})
-        self.history.append({"role": "assistant", "content": npc_response})
+        self.history.append({"role": "assistant", "content": npc_response_text})
 
         with open(self.memory_path, "w", encoding="utf-8") as f:
             json.dump(self.history, f, indent=2, ensure_ascii=False)
 
-        return npc_response
+        # On renvoie le dict complet (texte + émotion)
+        return data
+    

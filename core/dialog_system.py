@@ -2,6 +2,15 @@ import arcade
 from core.utils_text import wrap_dialog_history, count_wrapped_lines
 from managers.npc_agent import NPC_Agent
 
+EMOTION_MAP = {
+    "tres_positive": 3,
+    "positive": 1,
+    "neutre": 0,
+    "negative": -1,
+    "tres_negative": -3,
+}
+
+
 class DialogSystem:
     def __init__(self, game):
         self.game = game
@@ -15,6 +24,14 @@ class DialogSystem:
             detected = arcade.check_for_collision_with_list(g.player, npc_zones)
             if detected:
                 g.npc_to_talk = detected[0].npc_ref
+
+    def _apply_relation_from_emotion(self, npc_sprite, emotion: str):
+        if not hasattr(npc_sprite, "npc_state"):
+            return
+        delta = EMOTION_MAP.get(emotion, 0)
+        npc_sprite.npc_state.relation_score += delta
+        print(f"[RELATION] {npc_sprite.npc_name}: {emotion} → {delta} → {npc_sprite.npc_state.relation_score}")
+
 
     def update(self):
         self.detect_npc()
@@ -46,7 +63,11 @@ class DialogSystem:
 
         g.npc_agent = NPC_Agent(folder, quest_prompt)
         inv_list = list(g.inventory.keys())
-        first_message = g.npc_agent.start_dialog(inv_list)
+        result = g.npc_agent.start_dialog(inv_list)
+        first_message = result.get("response_text", "")
+        emotion = result.get("emotion", "neutre")
+        self._apply_relation_from_emotion(npc, emotion)
+
 
         # --- APPLIQUER LES EFFETS DE QUÊTES APRÈS LA RÉPONSE IA ---
         if g.quest_manager:
@@ -77,21 +98,21 @@ class DialogSystem:
             if quest_prompt:
                 g.npc_agent.quest_context = quest_prompt
 
-        # Réponse IA
-        npc_response = g.npc_agent.ask(
+        # Réponse IA (JSON)
+        result = g.npc_agent.ask(
             player_message=msg,
             inventory_list=list(g.inventory.keys())
         )
 
-        # APRES la réponse, on applique réellement la validation des quêtes
-        if g.quest_manager and g.current_npc:
-            completed_now = g.quest_manager.finalize_quests_after_dialog(
-                npc_name=g.current_npc.npc_name,
-                inventory=g.inventory,
-            )
-            # Si tu veux, tu peux ici afficher un message "Quête terminée !" selon completed_now
+        npc_response_text = result.get("response_text", "")
+        emotion = result.get("emotion", "neutre")
 
-        g.dialog_history.append((g.current_npc.npc_name.capitalize(), npc_response))
+        # Met à jour la relation du PNJ
+        if g.current_npc:
+            self._apply_relation_from_emotion(g.current_npc, emotion)
+
+
+        g.dialog_history.append((g.current_npc.npc_name.capitalize(), npc_response_text))
         g.dialog_input = ""
         g.dialog_scroll = 0
 

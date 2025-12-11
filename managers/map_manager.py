@@ -1,6 +1,6 @@
 import os
 from typing import Tuple, Optional
-
+from core.npc import NPC, get_npc_state
 import arcade
 
 TILE_SCALING = 1.0
@@ -137,6 +137,16 @@ class MapManager:
 
                 sprite = arcade.Sprite(texture_path, scale=custom_scale)
                 sprite.npc_name = name
+                sprite = arcade.Sprite(texture_path, scale=custom_scale)
+                sprite.npc_name = name
+
+                # ÉTAT LOGIQUE PERSISTANT DU PNJ (relation, etc.)
+                sprite.npc_state = get_npc_state(name)
+
+                x, y = _extract_point(npc.shape)
+                sprite.center_x = x
+                sprite.center_y = y
+
                 x, y = _extract_point(npc.shape)
                 sprite.center_x = x
                 sprite.center_y = y

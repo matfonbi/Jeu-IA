@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Optional
+from core.npc import get_npc_state
+
 
 
 @dataclass
@@ -328,7 +330,7 @@ class QuestManager:
                     if q.reward_item:
                         lines.append(
                             f"  • Tu viens de lui remettre la récompense prévue : '{q.reward_item}'. "
-                            "Mentionne clairement, dans ton style, que tu lui donnes cet objet."
+                            "Mentionne clairement, dans ton style, que tu lui donnes cet objet. Sauf si votre relation est tres mauvaise du coup vous ne lui donnez pas l'objet car vous ne l'aimer pas"
                         )
 
         # Instruction finale
@@ -354,6 +356,8 @@ class QuestManager:
         Retourne la liste des quêtes réellement complétées.
         """
         npc = self._normalize_npc_name(npc_name)
+        npc_state = get_npc_state(npc)
+        relation = npc_state.relation_score
         completed_now: List[str] = []
 
         for q in self._quests_validated_by(npc):
@@ -369,8 +373,18 @@ class QuestManager:
                         if inventory[item_id] <= 0:
                             del inventory[item_id]
 
+                # Si la relation est trop basse → ON NE DONNE PAS LA RÉCOMPENSE
+                if relation < npc_state.min_relation_for_rewards:
+                    print(f"[QUEST] {npc} refuse de donner la récompense (relation trop basse).")
+                    continue
+
                 # Donner la récompense
                 if q.reward_item:
                     inventory[q.reward_item] = inventory.get(q.reward_item, 0) + 1
+                    # BONUS si relation très haute
+                    if relation >= npc_state.max_relation_bonus:
+                        inventory[q.reward_item] += 1
+                        print(f"[QUEST] BONUS ! {npc} donne une récompense supplémentaire.")
+
 
         return completed_now
