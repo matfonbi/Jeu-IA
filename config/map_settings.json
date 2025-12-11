@@ -1,0 +1,32 @@
+{
+    "dungeon1": {
+        "zoom": 1.7,
+        "player_scale": 0.6,
+        "player_speed": 2
+    },
+    "big_tavern": {
+        "zoom": 1.7,
+        "player_scale": 1.1,
+        "player_speed": 1.5
+    },
+    "small_tavern": {
+        "zoom": 1.7,
+        "player_scale": 1.1,
+        "player_speed": 1.5
+    },
+    "middle_tavern": {
+        "zoom": 1.7,
+        "player_scale": 1.1,
+        "player_speed": 1.5
+    },
+    "beginning": {
+        "zoom": 1.7,
+        "player_scale": 0.7,
+        "player_speed": 2
+    },
+    "interior1": {
+        "zoom": 2.0,
+        "player_scale": 0.6,
+        "player_speed": 1
+    }
+}

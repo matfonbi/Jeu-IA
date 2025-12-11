@@ -5,14 +5,6 @@
   },
   {
     "role": "assistant",
-    "content": "Bonjour, bienvenue à Saint-Rocheval. Je suis Alric Dorvaine, le maire de cette charmante ville. (je lève les yeux de mes papiers, un peu distrait) Excusez-moi, je suis en plein dans mes... (je soupire légèrement) tâches administratives. Que puis-je faire pour vous aider ? Vous êtes nouveau dans notre ville ?"
-  },
-  {
-    "role": "user",
-    "content": "salem roya ca va ?"
-  },
-  {
-    "role": "assistant",
-    "content": "(surpris par le ton informel, mais restant poli) Ah, bonjour... (je souris légèrement) Oui, ça va, merci. Il y a beaucoup à faire pour maintenir notre ville en ordre, mais on s'en sort. (je pose mon stylo et me recule légèrement dans mon siège) Et vous, qu'est-ce qui vous amène à Saint-Rocheval ? Vous cherchez quelque chose en particulier ?"
+    "content": "Bonjour, bienvenue à Saint-Rocheval. Je suis Alric Dorvaine, le maire de cette belle ville. (Je lève les yeux de mes papiers, un peu distrait, mais avec un sourire aimable) Forcé de travailler un peu en plein air aujourd'hui, les archives municipales sont en désordre et j'ai besoin de mettre de l'ordre dans tout cela. (Je pose mon stylo et me lève, tendant une main pour une poignée de main) Comment puis-je vous aider ? Vous êtes nouveau ici ? Nous n'avons pas souvent de visites... (Je regarde autour de nous, notant les détails de la ville, avant de revenir vers vous) Qu'est-ce qui vous amène à Saint-Rocheval ?"
   }
 ]
