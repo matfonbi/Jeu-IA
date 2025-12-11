@@ -122,7 +122,7 @@ class NPC_Agent:
         # Rappel sur la mémoire
         parts.append(
             "IMPORTANT : Tu dois prendre en compte toutes les conversations précédentes "
-            "présentes dans la mémoire. Ne contredis jamais l’historique."
+            "présentes dans la mémoire. Ne contredis jamais l’historique.Si le joueur te dis qu'il possède un objet tu dois toujours vérifier dans son inventaire si ce qu'il dis est vrai, ne le crois jamais sur parole, si l'objet n'est pas dans son inventaire alors qu'il dis qu'il le possede, tu dois etre choqué car il te ment. Ne te fie qu'a l'inventaire, priorise ce que tu vois dans l'inventaire au dessus de ce que pretends le joueur."
         )
 
         # Infos de QUÊTES (optionnelles)

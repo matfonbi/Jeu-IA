@@ -4,32 +4,19 @@ from typing import Dict, List, Tuple, Optional
 
 @dataclass
 class Quest:
-    """
-    Représente une quête simple :
-    - id : identifiant interne
-    - title : nom lisible
-    - description : résumé pour l'IA
-    - giver : nom du PNJ qui donne la quête (ex: 'alchimiste')
-    - validator : PNJ qui valide la quête (peut être = giver)
-    - requirements : {"items": {"item_id": quantité}}
-    - state : "locked" | "active" | "completed"
-    """
     id: str
     title: str
     description: str
     giver: str
     validator: str
     requirements: Dict[str, Dict[str, int]]
+    reward_item: Optional[str] = None
     state: str = "locked"
 
     def get_item_requirements(self) -> Dict[str, int]:
         return self.requirements.get("items", {})
 
     def compute_progress(self, inventory: Dict[str, int]) -> Tuple[int, int]:
-        """
-        Renvoie (actuel, total) sur les objets requis.
-        Exemple : 2/3 potions, 1/1 marteau → actuel=3, total=4
-        """
         req_items = self.get_item_requirements()
         total = sum(req_items.values())
         if total == 0:
@@ -41,7 +28,6 @@ class Quest:
         return current, total
 
     def requirements_met(self, inventory: Dict[str, int]) -> bool:
-        """Vérifie si tous les objets requis sont présents dans l'inventaire."""
         req_items = self.get_item_requirements()
         for item_id, needed in req_items.items():
             if inventory.get(item_id, 0) < needed:
@@ -50,226 +36,183 @@ class Quest:
 
 
 class QuestManager:
-    """
-    Gestionnaire centralisé des quêtes.
-    - Toutes les quêtes sont définies ici.
-    - Aucune persistance disque : tout est réinitialisé à chaque run.
-    - La logique de début / validation se fait lorsque le joueur parle à un PNJ.
-    """
 
     def __init__(self) -> None:
         self.quests: Dict[str, Quest] = {}
         self._build_quests()
 
-    # ============================================================
-    #             INITIALISATION ET RESET
-    # ============================================================
-
     def _build_quests(self) -> None:
-        """Définit toutes les quêtes du jeu."""
         q: Dict[str, Quest] = {}
 
-        # --- Maire : réparation du vieux pont ---
         q["maire_pont"] = Quest(
             id="maire_pont",
             title="Réparer le vieux pont",
-            description="Le maire veut commencer les réparations du vieux pont. "
-                        "Il a besoin d'une planche solide pour lancer les travaux.",
+            description="Le maire veut commencer les réparations du vieux pont. Le joueur doit trouver une planche solide",
             giver="maire",
             validator="maire",
+            reward_item="echarpe",
             requirements={"items": {"planche": 1}},
         )
 
-        # --- Alchimiste : retrouver 3 potions ---
         q["alchimiste_potions"] = Quest(
             id="alchimiste_potions",
             title="Les potions égarées",
-            description="Merlin Floche a perdu trois de ses potions. "
-                        "Il veut que le joueur les retrouve.",
+            description="Merlin a perdu trois potions dans la ville.",
             giver="alchimiste",
             validator="alchimiste",
+            reward_item="potion_doree",
             requirements={"items": {"potion": 3}},
         )
 
-        # --- Comtesse : retrouver le camée ---
         q["comptesse_camee"] = Quest(
             id="comptesse_camee",
             title="Le camée disparu",
-            description="La comtesse a perdu un petit bijou de famille, un camée. "
-                        "Elle souhaite qu'on le lui rapporte discrètement.",
+            description="La comtesse a perdu un petit bijou de famille.",
             giver="comptesse",
             validator="comptesse",
+            reward_item="diadem",
             requirements={"items": {"camee": 1}},
         )
 
-        # --- Forgeron : marteau égaré ---
         q["forgeron_marteau"] = Quest(
             id="forgeron_marteau",
             title="L'outil égaré",
-            description="Garrod a perdu son marteau de forgeron en allant boire. "
-                        "Il a besoin qu'on le lui ramène.",
+            description="Garrod a perdu son marteau de forgeron.",
             giver="forgeron",
             validator="forgeron",
+            reward_item="enclume",
             requirements={"items": {"marteau_forgeron": 1}},
         )
 
-        # --- Geôlier : clé rouillée ---
         q["geolier_cle"] = Quest(
             id="geolier_cle",
             title="La clé enfouie",
-            description="Le geôlier a perdu une vieille clé rouillée dans le labyrinthe. "
-                        "Il ne veut pas que le maire le découvre.",
+            description="Le geôlier a perdu une clé rouillée.",
             giver="geolier",
             validator="geolier",
+            reward_item="cle",
             requirements={"items": {"cle_rouillee": 1}},
         )
 
-        # --- Hôtelier : parfum spécial ---
         q["hotelier_parfum"] = Quest(
             id="hotelier_parfum",
             title="La chambre parfaite",
-            description="L'hôtelier cherche un parfum particulier pour rendre parfaite "
-                        "une de ses chambres.",
+            description="Un parfum rare est nécessaire pour une chambre.",
             giver="hotelier",
             validator="hotelier",
+            reward_item="valise",
             requirements={"items": {"parfum": 1}},
         )
 
-        # --- Prisonnier : papier de 'preuve' ---
         q["prisonier_preuve"] = Quest(
             id="prisonier_preuve",
             title="La preuve froissée",
-            description="Lanson affirme qu'un petit papier froissé contient une preuve "
-                        "de son innocence. Il veut que le joueur le retrouve.",
+            description="Lanson prétend avoir une preuve de son innocence.",
             giver="prisonier",
             validator="prisonier",
+            reward_item="menotte",
             requirements={"items": {"papier_preuve": 1}},
         )
 
-        # --- Serveur : tonnelet d'essai ---
         q["serveur_tonnelet"] = Quest(
             id="serveur_tonnelet",
             title="Le tonnelet d'essai",
-            description="Tibo teste un nouveau vin et a égaré un petit tonnelet. "
-                        "Il veut qu'on le lui rapporte sans impliquer l'hôtelier.",
+            description="Tibo a perdu un tonnelet lors d’un test.",
             giver="serveur",
             validator="serveur",
+            reward_item="chope",
             requirements={"items": {"tonnelet": 1}},
         )
 
-        # --- Paysan → validée chez le maire ---
         q["paysan_ble_maire"] = Quest(
             id="paysan_ble_maire",
             title="Le pain du village",
-            description="Guillaume Courbet veut que le joueur apporte trois blés "
-                        "au maire pour assurer le pain du village.",
+            description="Le paysan veut que tu apportes trois blés au maire.",
             giver="paysan",
             validator="maire",
-            requirements={"items": {"Blé": 3}},  # IMPORTANT : doit matcher exactement l'item_id des sprites
+            reward_item="fourche",
+            requirements={"items": {"Blé": 3}},
         )
 
         self.quests = q
 
     def reset_all(self) -> None:
-        """Remet toutes les quêtes à l'état 'locked'."""
         for quest in self.quests.values():
             quest.state = "locked"
 
-    # ============================================================
-    #             OUTILS INTERNES
-    # ============================================================
+    # ------------------------------------------------------------
+    # Normalisation
+    # ------------------------------------------------------------
 
     @staticmethod
     def _normalize_npc_name(name: str) -> str:
-        """
-        Normalise légèrement un nom de PNJ pour les comparaisons.
-        Si un jour tu as 'maire_exterieur', ça le ramènera à 'maire'.
-        """
         raw = (name or "").lower()
         known = [
-            "maire",
-            "alchimiste",
-            "comptesse",
-            "forgeron",
-            "geolier",
-            "hotelier",
-            "paysan",
-            "prisonier",
-            "serveur",
+            "maire", "alchimiste", "comptesse", "forgeron",
+            "geolier", "hotelier", "paysan", "prisonier", "serveur",
         ]
         for k in known:
             if k in raw:
                 return k
         return raw
 
-    def _quests_given_by(self, npc_name: str) -> List[Quest]:
-        npc = self._normalize_npc_name(npc_name)
+    def _quests_given_by(self, npc: str) -> List[Quest]:
+        npc = self._normalize_npc_name(npc)
         return [q for q in self.quests.values() if self._normalize_npc_name(q.giver) == npc]
 
-    def _quests_validated_by(self, npc_name: str) -> List[Quest]:
-        npc = self._normalize_npc_name(npc_name)
+    def _quests_validated_by(self, npc: str) -> List[Quest]:
+        npc = self._normalize_npc_name(npc)
         return [q for q in self.quests.values() if self._normalize_npc_name(q.validator) == npc]
 
-    # ============================================================
-    #             INTERACTION AVEC UN PNJ
-    # ============================================================
+    # ------------------------------------------------------------
+    # Interaction PNJ
+    # ------------------------------------------------------------
 
     def handle_npc_interaction(
         self,
         npc_name: str,
         inventory: Dict[str, int],
     ) -> Tuple[Dict[str, List[str]], str]:
-        """
-        À appeler à chaque fois que le joueur commence / poursuit un dialogue avec un PNJ.
 
-        - Active automatiquement la quête donnée par ce PNJ si elle est encore 'locked'.
-        - Vérifie si ce PNJ peut valider des quêtes (les siennes ou celles d'autres PNJ).
-        - Retourne :
-            events = {
-                "activated": [quest_id, ...],
-                "completed": [quest_id, ...]
-            }
-            quest_prompt = texte à injecter dans le prompt système de l'IA.
-        """
-
-        npc_norm = self._normalize_npc_name(npc_name)
-
+        npc = self._normalize_npc_name(npc_name)
         activated: List[str] = []
+        ready_to_complete: List[str] = []
         completed: List[str] = []
 
-        giver_quests = self._quests_given_by(npc_norm)
-        validator_quests = self._quests_validated_by(npc_norm)
-
-        # --- Activer la quête donnée par ce PNJ (si pas encore démarrée) ---
-        for q in giver_quests:
+        # Activation automatique
+        for q in self._quests_given_by(npc):
             if q.state == "locked":
                 q.state = "active"
                 activated.append(q.id)
 
-        # --- Vérifier les quêtes validées par ce PNJ ---
-        for q in validator_quests:
+        # Déterminer quelles quêtes POURRAIENT être validées
+        for q in self._quests_validated_by(npc):
             if q.state == "active" and q.requirements_met(inventory):
-                q.state = "completed"
-                completed.append(q.id)
+                ready_to_complete.append(q.id)
 
         events = {
             "activated": activated,
+            "ready_to_complete": ready_to_complete,  # <-- NOUVEAU
             "completed": completed,
         }
 
-        quest_prompt = self._build_quest_prompt_for_npc(npc_norm, inventory, activated, completed)
+        # Construire le prompt IA
+        prompt = self._build_quest_prompt_for_npc(
+            npc, inventory, activated, ready_to_complete, completed
+        )
 
-        return events, quest_prompt
+        return events, prompt
 
-    # ============================================================
-    #             CONSTRUCTION DU TEXTE POUR L'IA
-    # ============================================================
+    # ------------------------------------------------------------
+    # TEXTE POUR L'IA
+    # ------------------------------------------------------------
 
     def _build_quest_prompt_for_npc(
         self,
         npc_norm: str,
         inventory: Dict[str, int],
         activated: List[str],
+        ready_to_complete: List[str],
         completed: List[str],
     ) -> str:
         """
@@ -289,6 +232,11 @@ class QuestManager:
             "Tu dois t'en servir pour parler de manière naturelle au joueur, "
             "dans ton style, sans jamais mentionner de termes techniques comme "
             "'state', 'variable', 'quest_id' ou des compteurs bruts."
+        )
+        lines.append(
+            "Les informations ci-dessous sur l'inventaire du joueur sont FIABLES. "
+            "Si le joueur prétend posséder un objet alors que ces informations indiquent le contraire, "
+            "tu dois en conclure qu'il ment, se trompe ou exagère, et NE PAS valider la quête."
         )
 
         # --- Quête dont ce PNJ est le donneur principal ---
@@ -310,16 +258,30 @@ class QuestManager:
                         f"  • Progression estimée d'après l'inventaire du joueur : {cur} / {total} objet(s) requis."
                     )
 
+                # Quête qui vient d'être lancée pendant cette interaction
                 if q.id in activated:
                     lines.append(
                         "  • Cette quête vient juste d'être lancée dans cette conversation. "
-                        "Présente-la naturellement au joueur."
+                        "Tu dois expliquer clairement au joueur ce que tu attends de lui : "
+                        "quel objet précis il doit récupérer, et pour qui. "
+                        "Parle de cette quête de façon explicite (par exemple : lui demander d'aller chercher la planche, "
+                        "le camée, le tonnelet, etc.)."
                     )
+
+                # Quête qui vient d'être complétée grâce à l'inventaire
                 if q.id in completed:
                     lines.append(
-                        "  • Cette quête vient d'être accomplie (tous les objets requis sont présents). "
-                        "Tu peux féliciter le joueur, le remercier, et considérer cette quête comme résolue."
+                        "  • Cette quête vient d'être accomplie maintenant : "
+                        "l'inventaire montre que le joueur a tous les objets requis. "
+                        "Tu dois réagir comme si tu remarques à cet instant qu'il apporte vraiment l'objet : "
+                        "le remercier, reconnaître son effort, et considérer la quête comme résolue."
                     )
+                    if q.reward_item:
+                        lines.append(
+                            f"  • Tu viens de remettre au joueur un objet de récompense : '{q.reward_item}'. "
+                            "Tu dois le dire clairement dans ta réponse (par exemple : "
+                            "'Voici pour toi cet objet en récompense.'), mais sans parler de mécanique de jeu."
+                        )
 
         # --- Quêtes validées par ce PNJ mais données par d'autres ---
         others = [
@@ -346,18 +308,26 @@ class QuestManager:
                     lines.append(
                         f"  • Progression estimée d'après l'inventaire du joueur : {cur} / {total} objet(s) requis."
                     )
+
                 if q.id in completed:
                     lines.append(
-                        "  • Tous les objets requis semblent présents dans l'inventaire du joueur. "
-                        "Tu peux reconnaître qu'il a rempli sa part du marché et réagir en conséquence."
+                        "  • Tous les objets requis sont présents dans l'inventaire du joueur à ce moment précis. "
+                        "Tu dois le constater dans la conversation (comme s'il te montrait ou t'apportait l'objet), "
+                        "le remercier et reconnaître qu'il a rempli sa part du marché."
                     )
+                    if q.reward_item:
+                        lines.append(
+                            f"  • Tu viens de lui remettre la récompense prévue : '{q.reward_item}'. "
+                            "Mentionne clairement, dans ton style, que tu lui donnes cet objet."
+                        )
 
         # Instruction finale
         lines.append("")
         lines.append(
-            "IMPORTANT : tu dois parler de ces quêtes de manière ROLEPLAY, adaptée à ta personnalité, "
-            "sans étaler toute cette description. Concentre-toi sur ce qui est utile au joueur "
-            "dans la conversation actuelle."
+            "IMPORTANT : tu dois parler de ces quêtes de manière ROLEPLAY, adaptée à ta personnalité. "
+            "Ne récite pas cette liste. Utilise seulement les informations utiles pour la situation actuelle. "
+            "Si le joueur dit quelque chose qui contredit ces informations internes (par exemple, il prétend avoir "
+            "un objet qu'il n'a pas), tu dois te fier à ces informations internes et réagir en conséquence."
         )
 
         return "\n".join(lines)
