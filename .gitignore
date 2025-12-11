@@ -2,11 +2,12 @@
 .env
 *.env
 
-# --- PYTHON ---
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
 
 # Virtual environments
 env/
