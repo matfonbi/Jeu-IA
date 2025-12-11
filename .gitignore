@@ -1,0 +1,27 @@
+# --- ENVIRONNEMENT & CONFIG ---
+.env
+*.env
+
+# --- PYTHON ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+env/
+venv/
+ENV/
+.venv/
+
+# Build / dist
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# IDE stuff
+.vscode/
+.idea/

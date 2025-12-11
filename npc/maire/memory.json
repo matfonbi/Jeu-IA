@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "role": "user",
+    "content": "Le joueur te voit pour la première fois. Tu es en train de vérifier des rapports municipaux devant la mairie, absorbé par ton travail.  \nAccueille-le chaleureusement mais avec la retenue d’un homme occupé. Présente-toi brièvement et propose ton aide."
+  },
+  {
+    "role": "assistant",
+    "content": "Bonjour, bienvenue à Saint-Rocheval. Je suis Alric Dorvaine, le maire de cette charmante ville. (je lève les yeux de mes papiers, un peu distrait) Excusez-moi, je suis en plein dans mes... (je soupire légèrement) tâches administratives. Que puis-je faire pour vous aider ? Vous êtes nouveau dans notre ville ?"
+  },
+  {
+    "role": "user",
+    "content": "salem roya ca va ?"
+  },
+  {
+    "role": "assistant",
+    "content": "(surpris par le ton informel, mais restant poli) Ah, bonjour... (je souris légèrement) Oui, ça va, merci. Il y a beaucoup à faire pour maintenir notre ville en ordre, mais on s'en sort. (je pose mon stylo et me recule légèrement dans mon siège) Et vous, qu'est-ce qui vous amène à Saint-Rocheval ? Vous cherchez quelque chose en particulier ?"
+  }
+]
