@@ -48,8 +48,16 @@ class DialogSystem:
         inv_list = list(g.inventory.keys())
         first_message = g.npc_agent.start_dialog(inv_list)
 
+        # --- APPLIQUER LES EFFETS DE QUÊTES APRÈS LA RÉPONSE IA ---
+        if g.quest_manager:
+            g.quest_manager.finalize_quests_after_dialog(
+                npc_name=npc.npc_name,
+                inventory=g.inventory,
+            )
+
         g.dialog_history = [(npc.npc_name.capitalize(), first_message)]
         g.dialog_input = ""
+
 
     def send_player_message(self):
         g = self.game
@@ -60,7 +68,7 @@ class DialogSystem:
 
         g.dialog_history.append(("Vous", msg))
 
-        quest_prompt = ""
+        # Met à jour le contexte de quêtes AVANT la réponse
         if g.quest_manager and g.current_npc:
             _, quest_prompt = g.quest_manager.handle_npc_interaction(
                 npc_name=g.current_npc.npc_name,
@@ -69,14 +77,24 @@ class DialogSystem:
             if quest_prompt:
                 g.npc_agent.quest_context = quest_prompt
 
+        # Réponse IA
         npc_response = g.npc_agent.ask(
             player_message=msg,
             inventory_list=list(g.inventory.keys())
         )
 
+        # APRES la réponse, on applique réellement la validation des quêtes
+        if g.quest_manager and g.current_npc:
+            completed_now = g.quest_manager.finalize_quests_after_dialog(
+                npc_name=g.current_npc.npc_name,
+                inventory=g.inventory,
+            )
+            # Si tu veux, tu peux ici afficher un message "Quête terminée !" selon completed_now
+
         g.dialog_history.append((g.current_npc.npc_name.capitalize(), npc_response))
         g.dialog_input = ""
         g.dialog_scroll = 0
+
 
     def scroll(self, dy):
         g = self.game

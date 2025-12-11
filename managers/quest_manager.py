@@ -176,32 +176,42 @@ class QuestManager:
 
         npc = self._normalize_npc_name(npc_name)
         activated: List[str] = []
-        ready_to_complete: List[str] = []
-        completed: List[str] = []
+        ready_to_complete: List[str] = []  # quêtes dont les conditions sont remplies POUR CETTE DISCUSSION
+        completed: List[str] = []          # quêtes déjà terminées AVANT cette discussion
 
-        # Activation automatique
+        # Activation automatique des quêtes données par ce PNJ
         for q in self._quests_given_by(npc):
             if q.state == "locked":
                 q.state = "active"
                 activated.append(q.id)
+            elif q.state == "completed":
+                completed.append(q.id)
 
-        # Déterminer quelles quêtes POURRAIENT être validées
+        # Quêtes validées par ce PNJ
         for q in self._quests_validated_by(npc):
-            if q.state == "active" and q.requirements_met(inventory):
+            if q.state == "completed":
+                completed.append(q.id)
+            elif q.state == "active" and q.requirements_met(inventory):
+                # Le joueur a tout ce qu'il faut, mais ON NE MODIFIE PAS ENCORE l'inventaire.
+                # On signale juste à l'IA que la quête est prête à être résolue maintenant.
                 ready_to_complete.append(q.id)
 
         events = {
             "activated": activated,
-            "ready_to_complete": ready_to_complete,  # <-- NOUVEAU
+            "ready_to_complete": ready_to_complete,
             "completed": completed,
         }
 
-        # Construire le prompt IA
-        prompt = self._build_quest_prompt_for_npc(
-            npc, inventory, activated, ready_to_complete, completed
+        quest_prompt = self._build_quest_prompt_for_npc(
+            npc_norm=npc,
+            inventory=inventory,
+            activated=activated,
+            ready_to_complete=ready_to_complete,
+            completed=completed,
         )
 
-        return events, prompt
+        return events, quest_prompt
+
 
     # ------------------------------------------------------------
     # TEXTE POUR L'IA
@@ -309,7 +319,7 @@ class QuestManager:
                         f"  • Progression estimée d'après l'inventaire du joueur : {cur} / {total} objet(s) requis."
                     )
 
-                if q.id in completed:
+                if q.id in ready_to_complete:
                     lines.append(
                         "  • Tous les objets requis sont présents dans l'inventaire du joueur à ce moment précis. "
                         "Tu dois le constater dans la conversation (comme s'il te montrait ou t'apportait l'objet), "
@@ -331,3 +341,36 @@ class QuestManager:
         )
 
         return "\n".join(lines)
+
+    def finalize_quests_after_dialog(
+        self,
+        npc_name: str,
+        inventory: Dict[str, int],
+    ) -> List[str]:
+        """
+        À appeler APRÈS que le PNJ ait répondu.
+        Si certaines quêtes sont 'actives' et que les requirements sont remplis,
+        on les marque comme complétées, on retire les objets et on donne la récompense.
+        Retourne la liste des quêtes réellement complétées.
+        """
+        npc = self._normalize_npc_name(npc_name)
+        completed_now: List[str] = []
+
+        for q in self._quests_validated_by(npc):
+            if q.state == "active" and q.requirements_met(inventory):
+                # On finalise maintenant
+                q.state = "completed"
+                completed_now.append(q.id)
+
+                # Retirer les objets
+                for item_id, needed in q.get_item_requirements().items():
+                    if item_id in inventory:
+                        inventory[item_id] -= needed
+                        if inventory[item_id] <= 0:
+                            del inventory[item_id]
+
+                # Donner la récompense
+                if q.reward_item:
+                    inventory[q.reward_item] = inventory.get(q.reward_item, 0) + 1
+
+        return completed_now
