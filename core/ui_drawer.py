@@ -1,13 +1,15 @@
+import os
 import arcade
 from core.utils_text import wrap_dialog_history
+
+ROOT_DIR = os.path.dirname(os.path.dirname(__file__))  
+ASSETS_DIR = os.path.join(ROOT_DIR, "assets", "objet")
+
 
 class UIDrawer:
     def __init__(self, game):
         self.game = game
 
-    # ---------------------------------------------------------
-    #                     DRAW ENTRY POINT
-    # ---------------------------------------------------------
     def draw(self):
         g = self.game
         g.clear()
@@ -69,7 +71,7 @@ class UIDrawer:
 
         # Transition bubble
         if g.show_bubble:
-            g.bubble_sprite.draw()
+            g.bubble_list.draw()
             arcade.draw_text(
                 "Appuyez sur E",
                 g.bubble_sprite.center_x,
@@ -215,7 +217,7 @@ class UIDrawer:
             arcade.draw_lbwh_rectangle_filled(sx, sy, slot, slot, (60,60,60,200))
             arcade.draw_lbwh_rectangle_outline(sx, sy, slot, slot, arcade.color.WHITE, 2)
 
-            texture_path = f"assets/objet/{item_name}.png"
+            texture_path = os.path.join(ASSETS_DIR, f"{item_name}.png")
             texture = arcade.load_texture(texture_path)
 
             icon = arcade.Sprite(texture, scale=1.0)
@@ -223,7 +225,9 @@ class UIDrawer:
             icon.center_y = sy + slot / 2
             icon.width = slot * 0.8
             icon.height = slot * 0.8
-            arcade.SpriteList([icon]).draw()
+            temp_list = arcade.SpriteList()
+            temp_list.append(icon)
+            temp_list.draw()
 
             arcade.draw_text(
                 str(quantity),
