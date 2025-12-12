@@ -243,6 +243,9 @@ class NPC_Agent:
             }
         ]
 
+        if "new_maire" in inventory_list:
+            messages.append({"role": "user", "content": "Le joueur est devenu le nouveau maire apres vous avoir tous aidé dans le village, si c'est la premiere fois que tu l'apprends, reagis en fonction, soit ravis de voir votre tout nouveau maire. Si on te l'a deja dis dans ton historique, pas besoin de le souligner mais parle comme si tu t'adressais au maire de ta ville. N'oublie jamais l'historique de votre conversation malgrés tout, meme si tu t'adresse au nouveau maire."})
+
         # Ajout de l'historique des conversations
         for h in self.history:
             messages.append({"role": h["role"], "content": h["content"]})

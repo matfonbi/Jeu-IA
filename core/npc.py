@@ -9,7 +9,7 @@ class NPC:
     name: str
     relation_score: int = 10
     min_relation_for_rewards: int = 5     # en dessous : pas de récompense
-    max_relation_bonus: int = 15         # au-dessus : bonus
+    max_relation_bonus: int = 25         # au-dessus : bonus
 
 # Petit registre global : on garde 1 état par PNJ (par nom)
 _NPC_REGISTRY: Dict[str, NPC] = {}

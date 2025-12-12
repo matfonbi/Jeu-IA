@@ -56,6 +56,16 @@ class QuestManager:
             requirements={"items": {"planche": 1}},
         )
 
+        q["new_maire"] = Quest(
+            id="new_maire",
+            title="Aider tous les habitants de la ville",
+            description="Tous les habitants de cette ville ont besoin d'aide, le joueur doit tous les aider pour prouver sa valeur, quand la quete est validé, félicité le joueur et dites lui que vous lui laissez votre place a la tete de la ville",
+            giver="maire",
+            validator="maire",
+            reward_item="new_maire",
+            requirements={"items": {"potion_doree": 1, "echarpe" : 1, "diadem": 1, "enclume": 1, "chope": 1, "fourche": 1, "cle": 1, "menotte": 1, "valise": 1}},
+        )
+
         q["alchimiste_potions"] = Quest(
             id="alchimiste_potions",
             title="Les potions égarées",

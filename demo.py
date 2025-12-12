@@ -43,4 +43,5 @@ def ask_llm(interaction: str) -> dict:
     return result
 
 
-print(ask_llm(f"Je suis en vancances c'est super !"))
+response = ask_llm(f"Je suis en vancances c'est super !")
+print(response["poem "])

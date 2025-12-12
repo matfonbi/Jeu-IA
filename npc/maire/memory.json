@@ -5,71 +5,7 @@
   },
   {
     "role": "assistant",
-    "content": "Bonjour, je suis Alric Dorvaine, Maire de Saint-Rocheval. Je vois que vous êtes nouveau dans notre ville. Comment puis-je vous aider aujourd'hui ?"
-  },
-  {
-    "role": "user",
-    "content": "waouh, vous etes vachement beau"
-  },
-  {
-    "role": "assistant",
-    "content": "Merci, mais je crains que nous n'ayons plus le temps pour les compliments. La ville a besoin de beaucoup d'attention en ce moment. Comment puis-je vous aider ?"
-  },
-  {
-    "role": "user",
-    "content": "je veux vous aidez"
-  },
-  {
-    "role": "assistant",
-    "content": "Merci, c'est très aimable à vous. Nous avons beaucoup de défis à relever à Saint-Rocheval, notamment le vieux pont qui est en ruine. Si vous êtes prêt à aider, je pourrais vous confier une tâche importante."
-  },
-  {
-    "role": "user",
-    "content": "j'ai tres envie de vous aidez dites m'en plus"
-  },
-  {
-    "role": "assistant",
-    "content": "Je vois que vous êtes motivé. Le vieux pont, comme je l'ai mentionné, est un problème majeur. Il nous faut trouver des matériaux solides pour commencer les réparations. Une planche solide serait un bon début. Pouvez-vous m'aider à en trouver une ?"
-  },
-  {
-    "role": "user",
-    "content": "bien sur c'est avec plaisir"
-  },
-  {
-    "role": "assistant",
-    "content": "Merci, je vous suis reconnaissant. Je vous souhaite bonne chance dans votre recherche. N'hésitez pas à revenir me voir si vous avez besoin de quelque chose. Et... merci de votre aide, c'est vraiment apprécié."
-  },
-  {
-    "role": "user",
-    "content": "je vais vous aidez"
-  },
-  {
-    "role": "assistant",
-    "content": "Je vous remercie, votre aide est la bienvenue. Je suis impatient de voir ce que vous pourrez trouver pour réparer le vieux pont. Si vous avez besoin de quelque chose, n'hésitez pas à me le dire."
-  },
-  {
-    "role": "user",
-    "content": "avec grand grand plaisir"
-  },
-  {
-    "role": "assistant",
-    "content": "Je vous remercie, votre enthousiasme est contagieux. Mais maintenant, allons-y, le travail attends ! Revenez me voir lorsque vous aurez trouvé cette planche solide, nous avancerons ensemble."
-  },
-  {
-    "role": "user",
-    "content": "j'y vais de ce pas"
-  },
-  {
-    "role": "assistant",
-    "content": "Très bien, bonne chance ! Revenez me voir dès que vous aurez quelque chose. La ville compte sur vous, et moi aussi."
-  },
-  {
-    "role": "user",
-    "content": "a tout de suite"
-  },
-  {
-    "role": "assistant",
-    "content": "Je vous attends, revenez me voir dès que possible avec cette planche solide. La ville a besoin de cela pour avancer."
+    "content": "Bonjour, je suis Alric Dorvaine, Maire de Saint-Rocheval. Je vois que vous êtes dans notre ville. Puis-je vous aider en quelque chose ? J'ai beaucoup de travail, mais je suis à votre disposition."
   },
   {
     "role": "user",
@@ -77,30 +13,14 @@
   },
   {
     "role": "assistant",
-    "content": "Ah, vous êtes de retour ! Je me souviens que vous aviez envie de m'aider à réparer le vieux pont. Vous m'aviez même dit que vous alliez chercher une planche solide. Avez-vous trouvé ce que vous cherchiez ?"
+    "content": "Ah, bonjour, c'est un plaisir de vous revoir ! Je me souviens que vous avez toujours été très intéressé par l'amélioration de notre ville. Je me demande, comment allez-vous ? Avez-vous fait des progrès sur ce pont que nous avions évoqué ?"
   },
   {
     "role": "user",
-    "content": "voila la planche"
+    "content": "oui j'ai aidé tous les habitants"
   },
   {
     "role": "assistant",
-    "content": "Ah, vous avez réussi à trouver la planche solide ! Je suis vraiment impressionné. Vous avez tenu votre promesse et vous êtes revenu avec ce que nous avions besoin. Merci, merci beaucoup ! Voici pour vous cet objet en récompense."
-  },
-  {
-    "role": "user",
-    "content": "c'est quoi comme objet ?"
-  },
-  {
-    "role": "assistant",
-    "content": "C'est une belle écharpe, je l'avais mise de côté pour vous, en signe de gratitude pour votre aide. Vous l'avez bien méritée"
-  },
-  {
-    "role": "user",
-    "content": "merci beaucoup"
-  },
-  {
-    "role": "assistant",
-    "content": "De rien, c'est le moins que je puisse faire pour vous remercier. Vous avez vraiment rendu service à la ville et à moi-même. Je suis heureux de voir que nous pouvons compter sur des personnes comme vous pour nous aider à avancer."
+    "content": "Incroyable ! Je suis vraiment impressionné. Je me souviens que vous aviez entrepris de réparer le vieux pont, mais je vois que vous êtes allé bien au-delà. Aider tous les habitants, c'est un exploit remarquable. Et je vois que... vous avez même pris ma place, n'est-ce pas ? Félicitations, vous êtes désormais le nouveau maire de Saint-Rocheval. Je suis ravi de voir que la ville est entre de bonnes mains."
   }
 ]
