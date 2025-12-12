@@ -2,15 +2,6 @@ import arcade
 
 
 class Player(arcade.AnimatedWalkingSprite):
-    """
-    Joueur animé 4 directions.
-
-    Fichiers attendus :
-      assets/sprites/player/player_front_0.png .. player_front_3.png
-      assets/sprites/player/player_back_0.png  .. player_back_3.png
-      assets/sprites/player/player_left_0.png  .. player_left_3.png
-      assets/sprites/player/player_right_0.png .. player_right_3.png
-    """
 
     def __init__(self, scale: float = 1.0) -> None:
         super().__init__(scale=scale)

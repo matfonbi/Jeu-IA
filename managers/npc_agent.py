@@ -134,7 +134,7 @@ class NPC_Agent:
             '  \"response_text\": \"<ce que tu dirais normalement au joueur en français>\",\n'
             '  \"emotion\": \"tres_positive\" | \"positive\" | \"neutre\" | \"negative\" | \"tres_negative\"\n"'
             "}\n"
-            "Ne mets pas de commentaires, pas de code block ```json, uniquement l'objet JSON.Emotions doit representer comment tu ressens l'interaction avec le joueurs, si tu la trouve positive ou non, si le personnage te complimente, prends ca de maniere positive et si il t'insulte, de maniere negative"
+            "Ne mets pas de commentaires, pas de code block ```json, uniquement l'objet JSON. response_text ne doit jamais contenir un json, exclusiement ton texte de reponse.Emotions doit representer comment tu ressens l'interaction avec le joueurs, si tu la trouve positive ou non, si le personnage te complimente, prends ca de maniere positive et si il t'insulte, de maniere negative"
         )
 
 
